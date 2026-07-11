@@ -85,7 +85,7 @@
           </sc-for>
         </div>
         <div style="padding:12px 14px;border-top:1px solid rgba(212,168,92,.12)">
-          <div onClick="{{ h.addRoom }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:9px;border:1px dashed rgba(212,168,92,.35);border-radius:8px;color:#D4A85C;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="background:rgba(212,168,92,.08);border-color:rgba(212,168,92,.6)">+ Add Room</div>
+          <div onClick="{{ h.addRoom }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:9px;border:1px dashed rgba(212,168,92,.35);border-radius:8px;color:#D4A85C;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="background:rgba(212,168,92,.08);border-color:rgba(212,168,92,.6)">+ Add Slide</div>
         </div>
       </div>
     </sc-if>
@@ -124,9 +124,48 @@
               <img src="lsa-logomark.png" alt="Lintel Space Atelier" style="position:absolute;top:4cqh;right:4cqh;width:10cqh;height:8cqh;object-fit:contain">
               <div style="position:absolute;left:0;right:0;bottom:0;padding:0 6cqh 9cqh">
                 <div style="font-size:1.35cqh;letter-spacing:.6cqh;text-transform:uppercase;color:var(--sacc);margin-bottom:1.6cqh">Interior Design Proposal &middot; 2026</div>
-                <div style="display:inline-block;font-size:1.3cqh;letter-spacing:.3cqh;text-transform:uppercase;border:1px solid var(--sacc);color:var(--sacc);padding:.55cqh 1.8cqh;border-radius:999px;margin-bottom:2cqh">{{ data.theme }}</div>
+                <div style="display:inline-block;font-size:1.3cqh;letter-spacing:.3cqh;text-transform:uppercase;border:1px solid var(--sacc);color:var(--sacc);padding:.55cqh 1.8cqh;border-radius:999px;margin-bottom:1.2cqh">{{ data.theme }}</div>
+                <sc-if value="{{ themeSlogan }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-family:var(--sser);font-style:italic;font-size:1.9cqh;color:rgba(247,242,233,.72);margin-bottom:1.8cqh;max-width:80%">{{ themeSlogan }}</div>
+                </sc-if>
                 <div style="font-family:var(--sser);font-style:italic;font-size:6.4cqh;color:#fff;line-height:1.08;margin-bottom:1.2cqh">{{ data.project }}</div>
                 <div style="font-family:var(--sser);font-size:2cqh;letter-spacing:.7cqh;text-transform:uppercase;color:rgba(247,242,233,.55)">{{ data.client }}</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ── GALLERY ── -->
+          <sc-if value="{{ isGallery }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;background:#0D0D27;display:flex;flex-direction:column;padding:3.4cqh" data-screen-label="Gallery slide">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.8cqh">
+                <div>
+                  <div style="font-size:1.3cqh;letter-spacing:.5cqh;text-transform:uppercase;color:var(--sacc);margin-bottom:.7cqh">Gallery</div>
+                  <div onClick="{{ gal.rename }}" title="Click to rename" style="font-family:var(--sser);font-style:italic;font-size:3.6cqh;color:#fff;cursor:pointer">{{ gal.name }}</div>
+                </div>
+                <sc-if value="{{ isDesignMode }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:.9cqh;align-items:center">
+                    <sc-for list="{{ gal.layouts }}" as="ly" hint-placeholder-count="3">
+                      <div onClick="{{ ly.pick }}" style="{{ ly.style }}">{{ ly.label }}</div>
+                    </sc-for>
+                    <div onClick="{{ gal.del }}" style="padding:.55cqh 1.4cqh;border:1px solid rgba(224,110,110,.5);border-radius:999px;color:#E08A8A;font-size:1.15cqh;letter-spacing:.2cqh;text-transform:uppercase;cursor:pointer">Remove</div>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="flex:1;display:flex;gap:1.6cqh;min-height:0">
+                <sc-for list="{{ gal.cells }}" as="c" hint-placeholder-count="2">
+                  <label style="position:relative;flex:1;border-radius:1cqh;overflow:hidden;background:#101033;border:1px dashed rgba(212,168,92,.3);cursor:pointer;display:flex;align-items:center;justify-content:center">
+                    <div style="{{ c.bg }}"></div>
+                    <sc-if value="{{ c.empty }}" hint-placeholder-val="{{ true }}">
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:.8cqh;color:rgba(212,168,92,.55)">
+                        <span style="font-size:2.6cqh">&#8613;</span>
+                        <span style="font-size:1.2cqh;letter-spacing:.25cqh;text-transform:uppercase">Click to add image</span>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ isDesignMode }}" hint-placeholder-val="{{ false }}">
+                      <input type="file" accept="image/*" onChange="{{ c.file }}" style="display:none">
+                    </sc-if>
+                  </label>
+                </sc-for>
               </div>
             </div>
           </sc-if>
@@ -320,6 +359,9 @@
                           <div onClick="{{ t.pick }}" style="{{ t.style }}" style-hover="border-color:rgba(212,168,92,.6)">{{ t.name }}</div>
                         </sc-for>
                       </div>
+                      <sc-if value="{{ themeSlogan }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-style:italic;font-size:11px;color:rgba(233,192,107,.75);line-height:1.5;padding-top:2px">{{ themeSlogan }}</div>
+                      </sc-if>
                     </div>
                   </sc-if>
 
@@ -599,6 +641,7 @@ class Component extends DCLogic {
       moodImgs: [null, null, null, null],
       moodDesc: 'A palette drawn from dusk — smoked oak, honed stone and champagne light.',
       mats: ['Smoked Oak', 'St. Laurent Marble', 'Antique Brass', 'Bouclé'],
+      galleries: [],
       rooms: {
         living: { name: 'Living Room', num: '01', hero: null, detail: null, desc: 'Where the household gathers — a balance of warmth, elegance and effortless hospitality.', points: ['Bespoke seating in bouclé & walnut', 'Fluted stone feature wall', 'Layered ambient lighting'] },
         kitchen: { name: 'Kitchen', num: '02', hero: null, detail: null, desc: 'Culinary theatre in quiet materials — precise, generous and beautifully lit.', points: ['Handleless smoked-oak cabinetry', 'Honed quartzite island', 'Integrated premium appliances'] },
@@ -607,7 +650,7 @@ class Component extends DCLogic {
     }
   };
 
-  SLIDES = [
+  BASE_SLIDES = [
     { key: 'cover', icon: '🏠', label: 'Welcome', type: 'cover' },
     { key: 'vision', icon: '✨', label: 'Vision', type: 'vision' },
     { key: 'mood', icon: '🎨', label: 'Moodboard', type: 'mood' },
@@ -618,8 +661,23 @@ class Component extends DCLogic {
     { key: 'warranty', icon: '🛡', label: 'Warranty', type: 'warranty' },
     { key: 'thanks', icon: '🙏', label: 'Thank You', type: 'thanks' }
   ];
+  get SLIDES() {
+    const gals = ((this.state && this.state.data && this.state.data.galleries) || []).map((g, i) => (
+      { key: 'gal' + i, icon: '🖼', label: g.name || ('Gallery ' + (i + 1)), type: 'gallery', gi: i }
+    ));
+    return [...this.BASE_SLIDES.slice(0, 6), ...gals, ...this.BASE_SLIDES.slice(6)];
+  }
 
-  DEFAULT_OPEN = { cover: 'content', vision: 'content', mood: 'layout', room: 'images', palette: 'colours', warranty: 'content', thanks: 'content' };
+  DEFAULT_OPEN = { cover: 'content', vision: 'content', mood: 'layout', room: 'images', palette: 'colours', warranty: 'content', thanks: 'content', gallery: 'content' };
+
+  THEME_INFO = {
+    'Contemporary Luxury': 'Quiet opulence — refined materials, generous light, effortless calm.',
+    'Modern Minimalist': 'Less, chosen well — clean lines, honest materials, uncluttered living.',
+    'Japandi': 'Japanese serenity meets Scandinavian warmth — natural, gentle, grounded.',
+    'Art Deco': 'Glamour with geometry — bold curves, rich brass, statement elegance.',
+    'Wabi-Sabi': 'Beauty in the imperfect — raw textures, patina, and honest simplicity.',
+    'Neo-Classical': 'Timeless proportion — columns of calm, symmetry, and heritage detail.'
+  };
 
   componentDidMount() {
     if ((this.props.defaultMode ?? 'design') === 'present') this.setState({ mode: 'present' });
@@ -658,6 +716,25 @@ class Component extends DCLogic {
   }
   toggle(sec) { this.setState(s => ({ open: s.open === sec ? null : sec })); }
 
+  addGallery() {
+    this.setState(s => {
+      const gals = [...(s.data.galleries || []), { name: 'Gallery', layout: 'duo', imgs: [null, null, null] }];
+      return { data: { ...s.data, galleries: gals }, active: 6 + gals.length - 1, open: 'content', saved: true };
+    });
+  }
+  setGal(gi, patch) {
+    this.setState(s => {
+      const gals = (s.data.galleries || []).map((g, i) => i === gi ? { ...g, ...patch } : g);
+      return { data: { ...s.data, galleries: gals }, saved: true };
+    });
+  }
+  delGallery(gi) {
+    this.setState(s => {
+      const gals = (s.data.galleries || []).filter((_, i) => i !== gi);
+      return { data: { ...s.data, galleries: gals }, active: Math.max(0, s.active - 1), saved: true };
+    });
+  }
+
   _loadLib(src) {
     return new Promise((res, rej) => {
       if (document.querySelector('script[src="' + src + '"]')) return res();
@@ -683,7 +760,19 @@ class Component extends DCLogic {
         const node = document.querySelector('[data-screen-label="Slide canvas"]');
         if (!node) throw new Error('Slide canvas not found');
         const scale = Math.max(2, Math.min(3, 1400 / node.clientWidth));
-        const canvas = await window.html2canvas(node, { scale, useCORS: true, backgroundColor: '#0D0D27', logging: false });
+        const canvas = await window.html2canvas(node, { scale, useCORS: true, backgroundColor: '#0D0D27', logging: false, onclone: (doc) => {
+          doc.querySelectorAll('img').forEach((im) => {
+            const st = im.getAttribute('style') || '';
+            if (st.indexOf('object-fit:cover') === -1 && st.indexOf('object-fit: cover') === -1) return;
+            if (!im.src) return;
+            const dv = doc.createElement('div');
+            dv.setAttribute('style', st.replace(/object-fit:\s*cover;?/g, ''));
+            dv.style.backgroundImage = 'url("' + im.src + '")';
+            dv.style.backgroundSize = 'cover';
+            dv.style.backgroundPosition = 'center';
+            im.replaceWith(dv);
+          });
+        } });
         const img = canvas.toDataURL('image/jpeg', 0.92);
         if (i > 0) pdf.addPage();
         pdf.addImage(img, 'JPEG', 0, 0, 297, 210);
@@ -784,6 +873,41 @@ class Component extends DCLogic {
     const showType = ['cover', 'vision'].includes(type);
 
     const chev = (k) => (st.open === k ? '▾' : '▸');
+
+    // ── theme slogan + gallery slide model
+    const themeSlogan = (this.THEME_INFO && this.THEME_INFO[d.theme]) || '';
+    let gal = { name: '', cells: [], layouts: [], del: () => {}, rename: () => {} };
+    if (slide.type === 'gallery') {
+      const gi = slide.gi;
+      const g = (d.galleries || [])[gi] || { layout: 'duo', imgs: [] };
+      const L = g.layout || 'duo';
+      const count = L === 'single' ? 1 : L === 'duo' ? 2 : 3;
+      gal = {
+        name: g.name || 'Gallery',
+        rename: () => { const n = window.prompt('Slide title', g.name || 'Gallery'); if (n) this.setGal(gi, { name: n }); },
+        del: () => { if (window.confirm('Remove this slide?')) this.delGallery(gi); },
+        layouts: ['single', 'duo', 'trio'].map(k => ({
+          label: k === 'single' ? '1 Image' : k === 'duo' ? '2 Images' : '3 Images',
+          pick: () => this.setGal(gi, { layout: k }),
+          style: {
+            padding: '.55cqh 1.4cqh', borderRadius: '999px', fontSize: '1.15cqh', letterSpacing: '.2cqh',
+            textTransform: 'uppercase', cursor: 'pointer', transition: 'all .2s',
+            border: L === k ? '1px solid rgba(212,168,92,.8)' : '1px solid rgba(247,242,233,.2)',
+            background: L === k ? 'rgba(212,168,92,.14)' : 'transparent',
+            color: L === k ? '#E9C06B' : 'rgba(247,242,233,.55)'
+          }
+        })),
+        cells: Array.from({ length: count }, (_, ci) => ({
+          empty: !(g.imgs && g.imgs[ci]),
+          bg: {
+            position: 'absolute', inset: 0,
+            backgroundImage: (g.imgs && g.imgs[ci]) ? 'url("' + g.imgs[ci] + '")' : 'none',
+            backgroundSize: 'cover', backgroundPosition: 'center'
+          },
+          file: this.readFileTo(src => { const imgs = [...(g.imgs || [null, null, null])]; imgs[ci] = src; this.setGal(gi, { imgs }); })
+        }))
+      };
+    }
 
     // ── theme chips
     const THEMES = ['Contemporary Luxury', 'Modern Minimalist', 'Japandi', 'Art Deco', 'Wabi-Sabi', 'Neo-Classical'];
@@ -961,7 +1085,7 @@ class Component extends DCLogic {
       exportPdf: () => this.exportRealPdf(),
       exportPptx: () => this.showToast('PowerPoint export coming soon — PDF is ready to use'),
       share: () => this.showToast('Share link copied — valid for 7 days'),
-      addRoom: () => this.showToast('Room templates coming to your library soon'),
+      addRoom: () => this.addGallery(),
       togContent: () => this.toggle('content'),
       togImages: () => this.toggle('images'),
       togLayout: () => this.toggle('layout'),
@@ -988,6 +1112,7 @@ class Component extends DCLogic {
       keywordList: d.keywords.split(',').map(w => ({ word: w.trim() })).filter(w => w.word),
       hasCoverImg: !!d.coverImg, noCoverImg: !d.coverImg,
       isCover: type === 'cover', isVision: type === 'vision', isMood: type === 'mood',
+      isGallery: type === 'gallery', gal, isDesignMode: st.mode === 'design', themeSlogan,
       isRoom: type === 'room', isPalette: type === 'palette', isWarranty: type === 'warranty', isThanks: type === 'thanks',
       slideVars: { position: 'absolute', inset: 0, '--sacc': d.accent, '--sser': d.serif },
       moodGridStyle, moodCells, layoutOpts,
