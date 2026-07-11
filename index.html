@@ -102,11 +102,11 @@
 
       <!-- exit present -->
       <sc-if value="{{ isPresent }}" hint-placeholder-val="{{ false }}">
-        <div onClick="{{ h.design }}" style="position:absolute;top:16px;right:20px;padding:7px 16px;border-radius:999px;border:1px solid rgba(212,168,92,.4);background:rgba(13,13,39,.8);color:#E9C06B;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;cursor:pointer;z-index:7;backdrop-filter:blur(6px);animation:lsaFadeIn .5s ease;transition:all .2s" style-hover="background:rgba(212,168,92,.14)">Exit &middot; Esc</div>
+        <div data-lsa-present="1" onClick="{{ h.design }}" style="position:absolute;top:16px;right:20px;padding:7px 16px;border-radius:999px;border:1px solid rgba(212,168,92,.4);background:rgba(13,13,39,.8);color:#E9C06B;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;cursor:pointer;z-index:7;backdrop-filter:blur(6px);animation:lsaFadeIn .5s ease;transition:all .2s" style-hover="background:rgba(212,168,92,.14)">Exit &middot; Esc</div>
       </sc-if>
 
       <!-- ═══ THE SLIDE (A4 portrait) ═══ -->
-      <div style="height:100%;aspect-ratio:0.707/1;position:relative;flex-shrink:0;box-shadow:0 30px 70px -28px rgba(0,0,0,.75),0 0 0 1px rgba(212,168,92,.12);overflow:hidden;border-radius:2px" data-screen-label="Slide canvas">
+      <div style="width:min(100%,calc((100vh - 130px)*1.4142));aspect-ratio:1.4142/1;height:auto;max-height:100%;position:relative;flex-shrink:0;box-shadow:0 30px 70px -28px rgba(0,0,0,.75),0 0 0 1px rgba(212,168,92,.12);overflow:hidden;border-radius:2px" data-screen-label="Slide canvas">
         <div style="{{ slideVars }}">
 
           <!-- ── COVER ── -->
@@ -672,7 +672,7 @@ class Component extends DCLogic {
       await this._loadLib('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
       await this._loadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
       const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
       const total = this.SLIDES.length;
       const origActive = this.state.active;
       const origMode = this.state.mode;
@@ -686,7 +686,7 @@ class Component extends DCLogic {
         const canvas = await window.html2canvas(node, { scale, useCORS: true, backgroundColor: '#0D0D27', logging: false });
         const img = canvas.toDataURL('image/jpeg', 0.92);
         if (i > 0) pdf.addPage();
-        pdf.addImage(img, 'JPEG', 0, 0, 210, 297);
+        pdf.addImage(img, 'JPEG', 0, 0, 297, 210);
       }
       this.setState({ active: origActive, mode: origMode });
       const d = this.state.data || {};
@@ -1014,6 +1014,62 @@ class Component extends DCLogic {
     };
   }
 }
+</script>
+<script>
+/* ── LSA presenter pointer + laser annotation (Presentation Mode only) ── */
+(function(){
+  var ptr=document.createElement("img");
+  ptr.src="lsa-logomark.png"; ptr.alt="";
+  ptr.style.cssText="position:fixed;width:26px;height:26px;pointer-events:none;z-index:99999;display:none;transform:translate(-50%,-50%);filter:drop-shadow(0 0 6px rgba(233,192,107,.9)) drop-shadow(0 0 14px rgba(212,168,92,.5));";
+  document.body.appendChild(ptr);
+  var cv=document.createElement("canvas");
+  cv.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:99998;display:none;";
+  document.body.appendChild(cv);
+  var ctx=cv.getContext("2d"), strokes=[], drawing=null, present=false;
+  function fit(){ cv.width=innerWidth; cv.height=innerHeight; }
+  fit(); addEventListener("resize",fit);
+  setInterval(function(){
+    var on=!!document.querySelector("[data-lsa-present]");
+    if(on!==present){
+      present=on;
+      ptr.style.display=on?"block":"none";
+      cv.style.display=on?"block":"none";
+      document.documentElement.style.cursor=on?"none":"";
+      if(!on){strokes=[];drawing=null;}
+    }
+  },400);
+  addEventListener("mousemove",function(e){
+    if(!present) return;
+    ptr.style.left=e.clientX+"px"; ptr.style.top=e.clientY+"px";
+    if(drawing){ drawing.pts.push({x:e.clientX,y:e.clientY}); }
+  },true);
+  addEventListener("mousedown",function(e){
+    if(!present) return;
+    drawing={pts:[{x:e.clientX,y:e.clientY}],born:0};
+  },true);
+  addEventListener("mouseup",function(){
+    if(!present||!drawing) return;
+    if(drawing.pts.length>2){ drawing.born=performance.now(); strokes.push(drawing); }
+    drawing=null;
+  },true);
+  var FADE=3200;
+  (function loop(now){
+    requestAnimationFrame(loop);
+    if(!present) return;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    strokes=strokes.filter(function(s){return now-s.born<FADE;});
+    var all=drawing?strokes.concat([{pts:drawing.pts,born:now}]):strokes;
+    all.forEach(function(s){
+      var a=Math.max(0,1-(now-s.born)/FADE);
+      ctx.strokeStyle="rgba(233,192,107,"+(0.9*a)+")";
+      ctx.lineWidth=3.2; ctx.lineCap="round"; ctx.lineJoin="round";
+      ctx.shadowColor="rgba(212,168,92,"+(0.8*a)+")"; ctx.shadowBlur=9;
+      ctx.beginPath();
+      s.pts.forEach(function(p,i){ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); });
+      ctx.stroke();
+    });
+  })(0);
+})();
 </script>
 </body>
 </html>
