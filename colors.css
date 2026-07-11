@@ -1,0 +1,83 @@
+/* ============================================================
+   Lintel Space Atelier — Colour tokens
+   Brand palette: midnight navy + champagne/antique gold + white,
+   warmed with residential cream & sand neutrals.
+   ============================================================ */
+
+:root {
+  /* ---- Ink / Navy (primary brand colour) ---- */
+  --navy-950: #07071A;
+  --navy-900: #0A0A1E;
+  --navy-800: #0D0D27; /* official brand navy */
+  --navy-700: #16163A;
+  --navy-600: #23234F;
+  --navy-500: #393968;
+  --navy-400: #5A5A86;
+  --navy-300: #8C8CAC;
+
+  /* ---- Gold (champagne -> antique gradient) ---- */
+  --gold-200: #FCE6AE;
+  --gold-300: #F9D272; /* light champagne (gradient start) */
+  --gold-400: #E9C06B;
+  --gold-500: #D4A85C; /* primary solid gold */
+  --gold-600: #BF8A44; /* deep antique (gradient end) */
+  --gold-700: #9E6F33;
+  --gold-800: #7A5526;
+
+  /* ---- Warm residential neutrals ---- */
+  --white:     #FFFFFF;
+  --cream-50:  #FBF8F2;
+  --cream-100: #F7F2E9; /* ivory page surface */
+  --sand-200:  #EFE6D6;
+  --sand-300:  #E2D5BF;
+  --taupe-400: #C9BCA6;
+  --stone-500: #9C9281;
+  --stone-600: #6F675A;
+  --stone-700: #4A4438;
+
+  /* ---- Signature gradients ---- */
+  --gradient-gold: linear-gradient(135deg, #F9D272 0%, #D4A85C 48%, #BF8A44 100%); /* @kind color */
+  --gradient-gold-soft: linear-gradient(135deg, #FCE6AE 0%, #E9C06B 100%); /* @kind color */
+  --gradient-navy: linear-gradient(160deg, #16163A 0%, #0D0D27 60%, #07071A 100%); /* @kind color */
+  --gradient-cream: linear-gradient(180deg, #FBF8F2 0%, #EFE6D6 100%); /* @kind color */
+
+  /* ============================================================
+     Semantic aliases
+     ============================================================ */
+
+  /* Surfaces */
+  --bg-page:        var(--cream-50);
+  --surface-canvas: var(--white);
+  --surface-card:   var(--white);
+  --surface-raised: var(--cream-100);
+  --surface-sunken: var(--sand-200);
+  --surface-navy:   var(--navy-800);
+  --surface-navy-deep: var(--navy-950);
+
+  /* Text */
+  --text-primary:   var(--navy-800);
+  --text-secondary: var(--stone-600);
+  --text-muted:     var(--stone-500);
+  --text-on-dark:   var(--cream-100);
+  --text-on-dark-muted: rgba(247, 242, 233, 0.66);
+  --text-gold:      var(--gold-600);
+  --text-gold-on-dark: var(--gold-400);
+
+  /* Accent */
+  --accent:        var(--gold-500);
+  --accent-strong: var(--gold-600);
+  --accent-soft:   var(--gold-200);
+
+  /* Borders & lines */
+  --border-subtle:  rgba(13, 13, 39, 0.08);
+  --border-default: rgba(13, 13, 39, 0.16);
+  --border-strong:  rgba(13, 13, 39, 0.30);
+  --border-gold:    var(--gold-500);
+  --border-on-dark: rgba(247, 242, 233, 0.18);
+
+  /* Functional (used sparingly; tuned to warm palette) */
+  --success: #5B7B5A;
+  --warning: #C08A3E;
+  --danger:  #A24A3C;
+  --info:    var(--navy-600);
+}

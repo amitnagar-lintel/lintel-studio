@@ -1,0 +1,75 @@
+/* ============================================================
+   Lintel Space Atelier — Typography tokens
+   Display: Cormorant Garamond (elegant serif, stands in for Times)
+   UI / body / labels: Jost (geometric sans)
+   ============================================================ */
+
+:root {
+  /* ---- Families ---- */
+  --font-serif: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
+  --font-sans:  'Jost', 'Helvetica Neue', Arial, sans-serif;
+  --font-times: 'Times New Roman', Times, serif; /* literal brand font alias */
+
+  --font-display: var(--font-serif);
+  --font-body:    var(--font-sans);
+  --font-label:   var(--font-sans);
+
+  /* ---- Weights ---- */
+  --fw-light:    300; /* @kind font */
+  --fw-regular:  400; /* @kind font */
+  --fw-medium:   500; /* @kind font */
+  --fw-semibold: 600; /* @kind font */
+  --fw-bold:     700; /* @kind font */
+
+  /* ---- Type scale (display in serif, body in sans) ---- */
+  --text-display-xl: 5.5rem;   /* 88px — hero title slide */
+  --text-display-l:  4rem;     /* 64px — section openers */
+  --text-display-m:  3rem;     /* 48px — slide titles */
+  --text-display-s:  2.25rem;  /* 36px — sub-headlines */
+  --text-heading:    1.5rem;   /* 24px — card / block headings */
+  --text-subhead:    1.25rem;  /* 20px */
+  --text-body-l:     1.125rem; /* 18px */
+  --text-body:       1rem;     /* 16px */
+  --text-body-s:     0.875rem; /* 14px */
+  --text-caption:    0.75rem;  /* 12px */
+
+  /* ---- Line heights ---- */
+  --leading-tight:   1.04;  /* @kind font */
+  --leading-snug:    1.2; /* @kind font */
+  --leading-normal:  1.5; /* @kind font */
+  --leading-relaxed: 1.7;   /* @kind font */
+
+  /* ---- Letter spacing ---- */
+  --tracking-tighter: -0.02em; /* @kind font */
+  --tracking-tight:   -0.01em; /* @kind font */
+  --tracking-normal:  0; /* @kind font */
+  --tracking-wide:    0.08em; /* @kind font */
+  --tracking-wider:   0.18em;  /* @kind font */
+  --tracking-widest:  0.32em;  /* @kind font */
+}
+
+/* ------------------------------------------------------------
+   Optional helper classes (foundation only — components own theirs)
+   ------------------------------------------------------------ */
+.lsa-display {
+  font-family: var(--font-serif);
+  font-weight: var(--fw-medium);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tighter);
+  color: var(--text-primary);
+}
+.lsa-eyebrow {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-medium);
+  font-size: var(--text-caption);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-gold);
+}
+.lsa-body {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-regular);
+  font-size: var(--text-body);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+}

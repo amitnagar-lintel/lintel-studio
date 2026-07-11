@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/design-system-3889a3eb-6107-4a99-bdee-f78d688d27be/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/design-system-3889a3eb-6107-4a99-bdee-f78d688d27be/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/design-system-3889a3eb-6107-4a99-bdee-f78d688d27be/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/design-system-3889a3eb-6107-4a99-bdee-f78d688d27be/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/design-system-3889a3eb-6107-4a99-bdee-f78d688d27be/tokens/effects.css">
+  <link rel="stylesheet" href="_ds/design-system-3889a3eb-6107-4a99-bdee-f78d688d27be/styles.css">
+  <script src="_ds/design-system-3889a3eb-6107-4a99-bdee-f78d688d27be/_ds_bundle.js"></script>
+  <style>
+    html,body{margin:0;padding:0;height:100%;background:#07071A;overflow:hidden}
+    a{color:#D4A85C;text-decoration:none}
+    a:hover{color:#E9C06B}
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-thumb{background:rgba(247,242,233,.12);border-radius:3px}
+    ::-webkit-scrollbar-track{background:transparent}
+    input::placeholder,textarea::placeholder{color:rgba(247,242,233,.28)}
+    @keyframes lsaFadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes lsaFadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes lsaSlideIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes lsaDots{0%,80%,100%{opacity:.25}40%{opacity:1}}
+  </style>
+</helmet>
+
+<div style="height:100vh;display:flex;flex-direction:column;background:#07071A;color:#F7F2E9;font-family:'Jost','Helvetica Neue',sans-serif;overflow:hidden" data-screen-label="LSA Presentation Studio">
+
+  <!-- ═══ TOP TOOLBAR (Designer mode) ═══ -->
+  <sc-if value="{{ isDesign }}" hint-placeholder-val="{{ true }}">
+    <div style="height:54px;flex-shrink:0;display:flex;align-items:center;gap:16px;padding:0 16px;background:#0D0D27;border-bottom:1px solid rgba(212,168,92,.14);animation:lsaFadeIn .3s ease">
+      <div style="display:flex;align-items:center;gap:11px;min-width:0">
+        <img src="assets/lsa-logomark.png" alt="Lintel Space Atelier" style="width:38px;height:30px;object-fit:contain;flex-shrink:0">
+        <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+          <input value="{{ data.project }}" onChange="{{ h.project }}" style="background:transparent;border:none;outline:none;color:#F7F2E9;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;padding:0;width:220px" style-hover="color:#E9C06B">
+          <div style="font-size:9px;letter-spacing:2.2px;text-transform:uppercase;color:rgba(247,242,233,.35)">Lintel Space Atelier &middot; Studio</div>
+        </div>
+      </div>
+
+      <div style="flex:1"></div>
+
+      <!-- mode segmented control -->
+      <div style="display:flex;background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.09);border-radius:999px;padding:3px;gap:2px">
+        <div style="padding:5px 16px;border-radius:999px;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;background:linear-gradient(135deg,#F9D272,#D4A85C 55%,#BF8A44);color:#0D0D27;font-weight:600;cursor:default">Design</div>
+        <div onClick="{{ h.present }}" style="padding:5px 16px;border-radius:999px;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(247,242,233,.55);cursor:pointer;transition:all .2s" style-hover="color:#F7F2E9;background:rgba(247,242,233,.06)">Present</div>
+      </div>
+
+      <div style="flex:1"></div>
+
+      <!-- grouped actions -->
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(154,196,154,.75);margin-right:2px"><span style="font-size:12px">&#10003;</span>{{ savedLabel }}</div>
+        <div onClick="{{ h.aiToggle }}" style="display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:8px;border:1px solid rgba(212,168,92,.4);color:#E9C06B;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="background:rgba(212,168,92,.1);box-shadow:0 8px 28px -8px rgba(191,138,68,.45)">
+          <span style="font-size:13px">&#10022;</span> Assistant
+        </div>
+        <div onClick="{{ h.share }}" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(247,242,233,.14);color:rgba(247,242,233,.7);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="border-color:rgba(247,242,233,.32);color:#F7F2E9">Share</div>
+        <div onClick="{{ h.exportPdf }}" style="padding:7px 16px;border-radius:8px;background:linear-gradient(135deg,#F9D272,#D4A85C 55%,#BF8A44);color:#0D0D27;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="filter:brightness(1.07)">Export</div>
+        <div style="width:30px;height:30px;border-radius:50%;background:#23234F;border:1px solid rgba(247,242,233,.14);display:flex;align-items:center;justify-content:center;font-size:11px;color:#E9C06B;cursor:pointer;margin-left:2px" style-hover="border-color:rgba(212,168,92,.5)" title="Settings — Ananya">A</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══ BODY ═══ -->
+  <div style="flex:1;min-height:0;display:flex">
+
+    <!-- ═══ LEFT RAIL — slide navigator ═══ -->
+    <sc-if value="{{ isDesign }}" hint-placeholder-val="{{ true }}">
+      <div style="width:216px;flex-shrink:0;background:#0D0D27;border-right:1px solid rgba(212,168,92,.14);display:flex;flex-direction:column;animation:lsaFadeIn .3s ease">
+        <div style="padding:16px 18px 10px;font-size:9.5px;letter-spacing:2.4px;text-transform:uppercase;color:#BF8A44;font-weight:500">Slides</div>
+        <div style="flex:1;overflow-y:auto;padding:4px 10px 10px;display:flex;flex-direction:column;gap:2px">
+          <sc-for list="{{ slides }}" as="s" hint-placeholder-count="9">
+            <div onClick="{{ s.go }}" style="{{ s.itemStyle }}" style-hover="background:rgba(247,242,233,.05)">
+              <sc-if value="{{ showIcons }}" hint-placeholder-val="{{ true }}">
+                <span style="font-size:14px;width:20px;text-align:center;flex-shrink:0">{{ s.icon }}</span>
+              </sc-if>
+              <span style="flex:1;font-size:12.5px;letter-spacing:.3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.label }}</span>
+              <span style="{{ s.numStyle }}">{{ s.num }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding:12px 14px;border-top:1px solid rgba(212,168,92,.12)">
+          <div onClick="{{ h.addRoom }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:9px;border:1px dashed rgba(212,168,92,.35);border-radius:8px;color:#D4A85C;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="background:rgba(212,168,92,.08);border-color:rgba(212,168,92,.6)">+ Add Room</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ═══ CANVAS ═══ -->
+    <div style="flex:1;min-width:0;position:relative;background:radial-gradient(ellipse at 50% 0%,#0D0D27 0%,#07071A 70%);display:flex;align-items:center;justify-content:center;padding:30px 64px">
+
+      <!-- prev / next -->
+      <div onClick="{{ h.prev }}" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid rgba(247,242,233,.12);display:flex;align-items:center;justify-content:center;color:rgba(247,242,233,.5);cursor:pointer;font-size:15px;transition:all .2s;z-index:6" style-hover="border-color:rgba(212,168,92,.55);color:#E9C06B">&#8592;</div>
+      <div onClick="{{ h.next }}" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid rgba(247,242,233,.12);display:flex;align-items:center;justify-content:center;color:rgba(247,242,233,.5);cursor:pointer;font-size:15px;transition:all .2s;z-index:6" style-hover="border-color:rgba(212,168,92,.55);color:#E9C06B">&#8594;</div>
+
+      <!-- counter pill -->
+      <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);padding:5px 16px;border-radius:999px;background:rgba(13,13,39,.85);border:1px solid rgba(247,242,233,.1);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(247,242,233,.55);z-index:6;backdrop-filter:blur(6px)">{{ counter }}</div>
+
+      <!-- exit present -->
+      <sc-if value="{{ isPresent }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ h.design }}" style="position:absolute;top:16px;right:20px;padding:7px 16px;border-radius:999px;border:1px solid rgba(212,168,92,.4);background:rgba(13,13,39,.8);color:#E9C06B;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;cursor:pointer;z-index:7;backdrop-filter:blur(6px);animation:lsaFadeIn .5s ease;transition:all .2s" style-hover="background:rgba(212,168,92,.14)">Exit &middot; Esc</div>
+      </sc-if>
+
+      <!-- ═══ THE SLIDE (A4 portrait) ═══ -->
+      <div style="height:100%;aspect-ratio:0.707/1;position:relative;flex-shrink:0;box-shadow:0 30px 70px -28px rgba(0,0,0,.75),0 0 0 1px rgba(212,168,92,.12);overflow:hidden;border-radius:2px" data-screen-label="Slide canvas">
+        <div style="{{ slideVars }}">
+
+          <!-- ── COVER ── -->
+          <sc-if value="{{ isCover }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute;inset:0;background:#0D0D27" data-screen-label="Cover slide">
+              <sc-if value="{{ hasCoverImg }}" hint-placeholder-val="{{ false }}">
+                <img src="{{ data.coverImg }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+              </sc-if>
+              <sc-if value="{{ noCoverImg }}" hint-placeholder-val="{{ true }}">
+                <div style="position:absolute;inset:0;background:linear-gradient(155deg,#23234F 0%,#16163A 45%,#0D0D27 100%)"></div>
+                <div style="position:absolute;top:18%;left:50%;transform:translateX(-50%);width:60%;aspect-ratio:1;border:1px solid rgba(212,168,92,.14);border-radius:50%"></div>
+                <div style="position:absolute;top:24%;left:50%;transform:translateX(-50%);width:44%;aspect-ratio:1;border:1px solid rgba(212,168,92,.1);border-radius:50%"></div>
+              </sc-if>
+              <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(7,7,26,.96) 12%,rgba(7,7,26,.35) 58%,rgba(7,7,26,.05) 100%)"></div>
+              <img src="assets/lsa-logomark.png" alt="Lintel Space Atelier" style="position:absolute;top:4cqh;right:4cqh;width:10cqh;height:8cqh;object-fit:contain">
+              <div style="position:absolute;left:0;right:0;bottom:0;padding:0 6cqh 9cqh">
+                <div style="font-size:1.35cqh;letter-spacing:.6cqh;text-transform:uppercase;color:var(--sacc);margin-bottom:1.6cqh">Interior Design Proposal &middot; 2026</div>
+                <div style="display:inline-block;font-size:1.3cqh;letter-spacing:.3cqh;text-transform:uppercase;border:1px solid var(--sacc);color:var(--sacc);padding:.55cqh 1.8cqh;border-radius:999px;margin-bottom:2cqh">{{ data.theme }}</div>
+                <div style="font-family:var(--sser);font-style:italic;font-size:6.4cqh;color:#fff;line-height:1.08;margin-bottom:1.2cqh">{{ data.project }}</div>
+                <div style="font-family:var(--sser);font-size:2cqh;letter-spacing:.7cqh;text-transform:uppercase;color:rgba(247,242,233,.55)">{{ data.client }}</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ── VISION ── -->
+          <sc-if value="{{ isVision }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;background:#0D0D27;display:flex;flex-direction:column;justify-content:center;padding:0 7cqh 6cqh" data-screen-label="Vision slide">
+              <div style="font-size:1.35cqh;letter-spacing:.5cqh;text-transform:uppercase;color:var(--sacc);margin-bottom:2.2cqh">The Vision</div>
+              <div style="width:5.5cqh;height:2px;background:var(--sacc);margin-bottom:2.6cqh"></div>
+              <div style="font-family:var(--sser);font-style:italic;font-size:4.6cqh;color:#fff;line-height:1.22;margin-bottom:3cqh">{{ data.vision }}</div>
+              <div style="font-family:var(--sser);font-size:1.95cqh;color:rgba(247,242,233,.6);line-height:1.9;max-width:82%;margin-bottom:3.4cqh">{{ data.brief }}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:1.2cqh">
+                <sc-for list="{{ keywordList }}" as="k" hint-placeholder-count="4">
+                  <div style="font-family:var(--sser);font-style:italic;font-size:1.7cqh;color:rgba(247,242,233,.65);border:1px solid rgba(212,168,92,.4);border-radius:999px;padding:.6cqh 2cqh">{{ k.word }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ── MOODBOARD ── -->
+          <sc-if value="{{ isMood }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;background:#16163A;display:flex;flex-direction:column;padding:3.4cqh 3.4cqh 6.5cqh" data-screen-label="Moodboard slide">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.8cqh">
+                <div style="font-size:1.35cqh;letter-spacing:.5cqh;text-transform:uppercase;color:var(--sacc)">Moodboard</div>
+                <div style="font-family:var(--sser);font-style:italic;font-size:1.9cqh;color:rgba(247,242,233,.45)">{{ data.theme }}</div>
+              </div>
+              <div style="{{ moodGridStyle }}">
+                <sc-for list="{{ moodCells }}" as="c" hint-placeholder-count="4">
+                  <div style="{{ c.cellStyle }}">
+                    <sc-if value="{{ c.img }}" hint-placeholder-val="{{ false }}">
+                      <img src="{{ c.img }}" style="width:100%;height:100%;object-fit:cover;display:block">
+                    </sc-if>
+                    <sc-if value="{{ c.empty }}" hint-placeholder-val="{{ true }}">
+                      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1cqh;color:rgba(212,168,92,.38);background:linear-gradient(150deg,rgba(247,242,233,.05),rgba(247,242,233,.01))">
+                        <div style="font-size:2.6cqh">&#10022;</div>
+                        <div style="font-size:1.1cqh;letter-spacing:.25cqh;text-transform:uppercase">{{ c.ph }}</div>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="font-family:var(--sser);font-style:italic;font-size:1.75cqh;color:rgba(247,242,233,.5);line-height:1.7;margin-top:1.8cqh">{{ data.moodDesc }}</div>
+            </div>
+          </sc-if>
+
+          <!-- ── ROOM ── -->
+          <sc-if value="{{ isRoom }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;background:#0D0D27;display:flex;flex-direction:column;padding-bottom:5.5cqh" data-screen-label="Room slide">
+              <div style="position:relative;height:50%;overflow:hidden;background:#16163A;flex-shrink:0">
+                <sc-if value="{{ room.hero }}" hint-placeholder-val="{{ false }}">
+                  <img src="{{ room.hero }}" style="width:100%;height:100%;object-fit:cover;display:block">
+                </sc-if>
+                <sc-if value="{{ room.noHero }}" hint-placeholder-val="{{ true }}">
+                  <div style="position:absolute;inset:0;background:linear-gradient(150deg,#23234F,#16163A 60%,#0D0D27);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4cqh;color:rgba(212,168,92,.4)">
+                    <div style="font-size:3.4cqh">&#10022;</div>
+                    <div style="font-size:1.3cqh;letter-spacing:.35cqh;text-transform:uppercase">Hero imagery</div>
+                  </div>
+                </sc-if>
+                <div style="position:absolute;top:2.4cqh;left:2.4cqh;display:flex;align-items:center;gap:1.4cqh;background:rgba(7,7,26,.78);backdrop-filter:blur(4px);padding:1cqh 2cqh;border:1px solid rgba(212,168,92,.3)">
+                  <div style="font-family:var(--sser);font-style:italic;font-size:2.8cqh;color:var(--sacc)">{{ room.num }}</div>
+                  <div style="font-family:var(--sser);font-style:italic;font-size:1.9cqh;color:#fff">{{ room.name }}</div>
+                </div>
+              </div>
+              <div style="flex:1;display:grid;grid-template-columns:1.5fr 1fr;min-height:0">
+                <div style="padding:2.6cqh 3cqh">
+                  <div style="font-size:1.2cqh;letter-spacing:.4cqh;text-transform:uppercase;color:var(--sacc);margin-bottom:1cqh">The Space</div>
+                  <div style="font-family:var(--sser);font-style:italic;font-size:3.4cqh;color:#fff;margin-bottom:1.4cqh;line-height:1.15">{{ room.name }}</div>
+                  <div style="font-size:1.7cqh;color:rgba(247,242,233,.55);line-height:1.75">{{ room.desc }}</div>
+                </div>
+                <div style="padding:2.6cqh 2.8cqh 2.6cqh 2.6cqh;border-left:1px solid rgba(212,168,92,.16);display:flex;flex-direction:column;gap:1.3cqh">
+                  <div style="font-size:1.15cqh;letter-spacing:.3cqh;text-transform:uppercase;color:rgba(247,242,233,.4)">Highlights</div>
+                  <sc-for list="{{ room.points }}" as="p" hint-placeholder-count="3">
+                    <div style="display:flex;gap:1cqh;font-size:1.5cqh;color:rgba(247,242,233,.6);line-height:1.5"><span style="color:var(--sacc)">&mdash;</span><span>{{ p.text }}</span></div>
+                  </sc-for>
+                  <div style="margin-top:auto;height:11cqh;position:relative;overflow:hidden;border:1px solid rgba(212,168,92,.2);background:rgba(247,242,233,.04)">
+                    <sc-if value="{{ room.detail }}" hint-placeholder-val="{{ false }}">
+                      <img src="{{ room.detail }}" style="width:100%;height:100%;object-fit:cover;display:block">
+                    </sc-if>
+                    <sc-if value="{{ room.noDetail }}" hint-placeholder-val="{{ true }}">
+                      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:1cqh;color:rgba(212,168,92,.35);font-size:1.1cqh;letter-spacing:.25cqh;text-transform:uppercase">&#10022; Detail</div>
+                    </sc-if>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ── PALETTE ── -->
+          <sc-if value="{{ isPalette }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;background:#0D0D27;display:flex;flex-direction:column;justify-content:center;padding:0 6cqh 6cqh" data-screen-label="Material palette slide">
+              <div style="font-size:1.35cqh;letter-spacing:.5cqh;text-transform:uppercase;color:var(--sacc);margin-bottom:1cqh">Material Palette</div>
+              <div style="font-family:var(--sser);font-style:italic;font-size:4.4cqh;color:#fff;margin-bottom:3.4cqh">A considered composition</div>
+              <div style="display:flex;height:24cqh;overflow:hidden;margin-bottom:3cqh">
+                <sc-for list="{{ paletteSwatches }}" as="sw" hint-placeholder-count="4">
+                  <div style="{{ sw.style }}">
+                    <div>
+                      <div style="font-size:1.25cqh;letter-spacing:.25cqh;text-transform:uppercase;margin-bottom:.4cqh">{{ sw.name }}</div>
+                      <div style="font-size:1.1cqh;letter-spacing:.15cqh;opacity:.7">{{ sw.hex }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:1.2cqh">
+                <sc-for list="{{ selectedMats }}" as="m" hint-placeholder-count="4">
+                  <div style="font-family:var(--sser);font-style:italic;font-size:1.75cqh;color:rgba(247,242,233,.6);border:1px solid rgba(212,168,92,.4);border-radius:999px;padding:.6cqh 2.2cqh">{{ m.name }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ── WARRANTY ── -->
+          <sc-if value="{{ isWarranty }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;background:#16163A;display:flex;flex-direction:column;justify-content:center;padding:0 6cqh 6cqh" data-screen-label="Warranty slide">
+              <div style="font-size:1.35cqh;letter-spacing:.5cqh;text-transform:uppercase;color:var(--sacc);margin-bottom:2.6cqh">Our Promise</div>
+              <div style="display:flex;align-items:center;gap:4cqh;margin-bottom:3cqh">
+                <div style="width:17cqh;height:17cqh;border-radius:50%;border:2px solid var(--sacc);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+                  <div style="font-family:var(--sser);font-style:italic;font-size:6cqh;color:var(--sacc);line-height:1">10</div>
+                  <div style="font-size:.95cqh;letter-spacing:.25cqh;text-transform:uppercase;color:rgba(247,242,233,.45);text-align:center;line-height:1.6">Year<br>Warranty</div>
+                </div>
+                <div style="font-family:var(--sser);font-style:italic;font-size:4.2cqh;color:#fff;line-height:1.2">Craftsmanship,<br>guaranteed in writing.</div>
+              </div>
+              <div style="font-size:1.75cqh;color:rgba(247,242,233,.55);line-height:1.85;max-width:88%;margin-bottom:2.8cqh">Every Lintel Space Atelier interior is covered by a comprehensive ten-year structural warranty — a written commitment to the longevity of every joint, hinge and finish we deliver.</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.4cqh">
+                <sc-for list="{{ warrantyPts }}" as="w" hint-placeholder-count="4">
+                  <div style="display:flex;gap:1.1cqh;font-size:1.55cqh;color:rgba(247,242,233,.55);line-height:1.5;align-items:flex-start"><span style="color:var(--sacc);font-size:1.1cqh;margin-top:.4cqh">&#10022;</span><span>{{ w.text }}</span></div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ── THANK YOU ── -->
+          <sc-if value="{{ isThanks }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;background:#0D0D27;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 6cqh 6cqh;overflow:hidden" data-screen-label="Thank you slide">
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70cqh;height:70cqh;border:1px solid rgba(212,168,92,.12);border-radius:50%"></div>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52cqh;height:52cqh;border:1px solid rgba(212,168,92,.08);border-radius:50%"></div>
+              <img src="assets/lsa-logomark.png" alt="Lintel Space Atelier" style="width:13cqh;height:10cqh;object-fit:contain;margin-bottom:3cqh;position:relative">
+              <div style="font-family:var(--sser);font-style:italic;font-size:7cqh;color:#fff;line-height:1.05;margin-bottom:1.6cqh;position:relative">Thank You</div>
+              <div style="font-family:var(--sser);font-size:1.8cqh;letter-spacing:.7cqh;text-transform:uppercase;color:rgba(247,242,233,.45);margin-bottom:3cqh;position:relative">{{ data.client }}</div>
+              <div style="width:42cqh;height:1px;background:linear-gradient(90deg,transparent,rgba(212,168,92,.5),transparent);margin-bottom:3cqh;position:relative"></div>
+              <div style="font-family:var(--sser);font-style:italic;font-size:1.9cqh;color:rgba(247,242,233,.45);max-width:75%;line-height:1.9;position:relative">We look forward to bringing your home to life — with patience, precision and quiet beauty.</div>
+            </div>
+          </sc-if>
+
+          <!-- shared footer -->
+          <div style="position:absolute;bottom:0;left:0;right:0;height:4.6cqh;background:#07071A;border-top:1px solid rgba(212,168,92,.18);display:flex;align-items:center;justify-content:space-between;padding:0 3cqh;z-index:5">
+            <div style="font-family:var(--sser);font-size:1.05cqh;letter-spacing:.35cqh;text-transform:uppercase;color:rgba(247,242,233,.75)">Lintel Space Atelier</div>
+            <div style="font-size:1.05cqh;letter-spacing:.15cqh;color:rgba(247,242,233,.35)">www.lintelspace.com &middot; Interiors of Distinction</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ RIGHT — CONTEXTUAL PROPERTY PANEL ═══ -->
+    <sc-if value="{{ isDesign }}" hint-placeholder-val="{{ true }}">
+      <div style="width:288px;flex-shrink:0;background:#0D0D27;border-left:1px solid rgba(212,168,92,.14);display:flex;flex-direction:column;animation:lsaFadeIn .3s ease" data-screen-label="Property panel">
+        <div style="padding:16px 18px 12px;border-bottom:1px solid rgba(212,168,92,.12);display:flex;align-items:center;gap:10px">
+          <span style="font-size:15px">{{ activeIcon }}</span>
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:#F7F2E9">{{ activeLabel }}</div>
+            <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(247,242,233,.35)">Slide properties</div>
+          </div>
+        </div>
+
+        <div style="flex:1;overflow-y:auto;padding:8px 12px 16px">
+
+          <!-- ░ CONTENT ░ -->
+          <sc-if value="{{ showContent }}" hint-placeholder-val="{{ true }}">
+            <div style="border-bottom:1px solid rgba(247,242,233,.07)">
+              <div onClick="{{ h.togContent }}" style="display:flex;align-items:center;gap:10px;padding:13px 6px;cursor:pointer;transition:all .15s" style-hover="color:#E9C06B">
+                <span style="font-size:13px;width:18px;text-align:center;color:#D4A85C">&#9998;</span>
+                <span style="flex:1;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:#F7F2E9">Content</span>
+                <span style="color:rgba(247,242,233,.4);font-size:10px">{{ chevContent }}</span>
+              </div>
+              <sc-if value="{{ openContent }}" hint-placeholder-val="{{ true }}">
+                <div style="padding:2px 6px 16px;display:flex;flex-direction:column;gap:12px;animation:lsaFadeUp .25s ease">
+
+                  <sc-if value="{{ isCover }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:flex;flex-direction:column;gap:5px">
+                      <label style="font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.4)">Client</label>
+                      <input value="{{ data.client }}" onChange="{{ h.client }}" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.1);border-radius:6px;color:#F7F2E9;font-size:12.5px;padding:8px 10px;outline:none;font-family:'Jost',sans-serif;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)">
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:5px">
+                      <label style="font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.4)">Project</label>
+                      <input value="{{ data.project }}" onChange="{{ h.project }}" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.1);border-radius:6px;color:#F7F2E9;font-size:12.5px;padding:8px 10px;outline:none;font-family:'Jost',sans-serif;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)">
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <label style="font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.4)">Theme</label>
+                      <div style="display:flex;flex-wrap:wrap;gap:6px">
+                        <sc-for list="{{ themeChips }}" as="t" hint-placeholder-count="6">
+                          <div onClick="{{ t.pick }}" style="{{ t.style }}" style-hover="border-color:rgba(212,168,92,.6)">{{ t.name }}</div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ isVision }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:5px">
+                      <label style="font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.4)">Vision statement</label>
+                      <textarea value="{{ data.vision }}" onChange="{{ h.vision }}" rows="3" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.1);border-radius:6px;color:#F7F2E9;font-size:12.5px;padding:8px 10px;outline:none;font-family:'Jost',sans-serif;resize:vertical;line-height:1.5;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)"></textarea>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:5px">
+                      <label style="font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.4)">Keywords</label>
+                      <input value="{{ data.keywords }}" onChange="{{ h.keywords }}" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.1);border-radius:6px;color:#F7F2E9;font-size:12.5px;padding:8px 10px;outline:none;font-family:'Jost',sans-serif;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)">
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ isRoom }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:5px">
+                      <label style="font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.4)">Room name</label>
+                      <input value="{{ room.name }}" onChange="{{ h.roomName }}" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.1);border-radius:6px;color:#F7F2E9;font-size:12.5px;padding:8px 10px;outline:none;font-family:'Jost',sans-serif;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)">
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <label style="font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.4)">Three highlights</label>
+                      <input value="{{ room.p0 }}" onChange="{{ h.point0 }}" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.1);border-radius:6px;color:#F7F2E9;font-size:12px;padding:7px 10px;outline:none;font-family:'Jost',sans-serif;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)">
+                      <input value="{{ room.p1 }}" onChange="{{ h.point1 }}" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.1);border-radius:6px;color:#F7F2E9;font-size:12px;padding:7px 10px;outline:none;font-family:'Jost',sans-serif;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)">
+                      <input value="{{ room.p2 }}" onChange="{{ h.point2 }}" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.1);border-radius:6px;color:#F7F2E9;font-size:12px;padding:7px 10px;outline:none;font-family:'Jost',sans-serif;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)">
+                    </div>
+                    <div onClick="{{ h.aiRoomDesc }}" style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;border:1px solid rgba(212,168,92,.4);color:#E9C06B;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;justify-content:center;transition:all .2s" style-hover="background:rgba(212,168,92,.1)">&#10022; Generate description</div>
+                  </sc-if>
+
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- ░ LAYOUT (moodboard) ░ -->
+          <sc-if value="{{ showLayout }}" hint-placeholder-val="{{ false }}">
+            <div style="border-bottom:1px solid rgba(247,242,233,.07)">
+              <div onClick="{{ h.togLayout }}" style="display:flex;align-items:center;gap:10px;padding:13px 6px;cursor:pointer;transition:all .15s" style-hover="color:#E9C06B">
+                <span style="font-size:13px;width:18px;text-align:center;color:#D4A85C">&#9707;</span>
+                <span style="flex:1;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:#F7F2E9">Layout</span>
+                <span style="color:rgba(247,242,233,.4);font-size:10px">{{ chevLayout }}</span>
+              </div>
+              <sc-if value="{{ openLayout }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:2px 6px 16px;animation:lsaFadeUp .25s ease">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                    <sc-for list="{{ layoutOpts }}" as="lo" hint-placeholder-count="4">
+                      <div onClick="{{ lo.pick }}" style="{{ lo.cardStyle }}" style-hover="border-color:rgba(212,168,92,.6)">
+                        <div style="{{ lo.gridStyle }}">
+                          <sc-for list="{{ lo.tiles }}" as="tl" hint-placeholder-count="4">
+                            <div style="{{ tl.style }}"></div>
+                          </sc-for>
+                        </div>
+                        <div style="font-size:9px;letter-spacing:1.2px;text-transform:uppercase;text-align:center;padding:6px 0 2px;color:rgba(247,242,233,.55)">{{ lo.name }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- ░ IMAGES ░ -->
+          <sc-if value="{{ showImages }}" hint-placeholder-val="{{ true }}">
+            <div style="border-bottom:1px solid rgba(247,242,233,.07)">
+              <div onClick="{{ h.togImages }}" style="display:flex;align-items:center;gap:10px;padding:13px 6px;cursor:pointer;transition:all .15s" style-hover="color:#E9C06B">
+                <span style="font-size:13px;width:18px;text-align:center;color:#D4A85C">&#9635;</span>
+                <span style="flex:1;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:#F7F2E9">Images</span>
+                <span style="color:rgba(247,242,233,.4);font-size:10px">{{ chevImages }}</span>
+              </div>
+              <sc-if value="{{ openImages }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:2px 6px 16px;display:flex;flex-direction:column;gap:10px;animation:lsaFadeUp .25s ease">
+                  <sc-for list="{{ imageSlots }}" as="im" hint-placeholder-count="2">
+                    <label onDragOver="{{ im.dragOver }}" onDrop="{{ im.drop }}" style="{{ im.cardStyle }}" style-hover="border-color:rgba(212,168,92,.65);background:rgba(212,168,92,.06)">
+                      <sc-if value="{{ im.img }}" hint-placeholder-val="{{ false }}">
+                        <img src="{{ im.img }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:7px">
+                        <div style="position:absolute;inset:0;background:rgba(7,7,26,.45);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:#F7F2E9;opacity:0;transition:opacity .2s" style-hover="opacity:1">Replace</div>
+                      </sc-if>
+                      <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
+                        <div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:rgba(212,168,92,.6)">
+                          <span style="font-size:17px">&#8613;</span>
+                          <span style="font-size:9.5px;letter-spacing:1.3px;text-transform:uppercase">{{ im.label }}</span>
+                          <span style="font-size:8.5px;color:rgba(247,242,233,.3)">Drop or click to upload</span>
+                        </div>
+                      </sc-if>
+                      <input type="file" accept="image/*" onChange="{{ im.file }}" style="display:none">
+                    </label>
+                  </sc-for>
+                  <sc-if value="{{ isMood }}" hint-placeholder-val="{{ false }}">
+                    <div onClick="{{ h.aiMood }}" style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;border:1px solid rgba(212,168,92,.4);color:#E9C06B;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;justify-content:center;transition:all .2s" style-hover="background:rgba(212,168,92,.1)">&#10022; AI generate moodboard</div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- ░ TYPOGRAPHY ░ -->
+          <sc-if value="{{ showType }}" hint-placeholder-val="{{ false }}">
+            <div style="border-bottom:1px solid rgba(247,242,233,.07)">
+              <div onClick="{{ h.togType }}" style="display:flex;align-items:center;gap:10px;padding:13px 6px;cursor:pointer;transition:all .15s" style-hover="color:#E9C06B">
+                <span style="font-size:13px;width:18px;text-align:center;color:#D4A85C;font-family:'Cormorant Garamond',serif;font-style:italic">Aa</span>
+                <span style="flex:1;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:#F7F2E9">Typography</span>
+                <span style="color:rgba(247,242,233,.4);font-size:10px">{{ chevType }}</span>
+              </div>
+              <sc-if value="{{ openType }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:2px 6px 16px;display:flex;flex-direction:column;gap:8px;animation:lsaFadeUp .25s ease">
+                  <sc-for list="{{ fontOpts }}" as="f" hint-placeholder-count="3">
+                    <div onClick="{{ f.pick }}" style="{{ f.style }}" style-hover="border-color:rgba(212,168,92,.6)">
+                      <span style="{{ f.aaStyle }}">Aa</span>
+                      <div>
+                        <div style="font-size:11.5px;color:#F7F2E9">{{ f.name }}</div>
+                        <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(247,242,233,.35)">{{ f.tag }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- ░ COLOURS ░ -->
+          <sc-if value="{{ showColours }}" hint-placeholder-val="{{ true }}">
+            <div style="border-bottom:1px solid rgba(247,242,233,.07)">
+              <div onClick="{{ h.togColours }}" style="display:flex;align-items:center;gap:10px;padding:13px 6px;cursor:pointer;transition:all .15s" style-hover="color:#E9C06B">
+                <span style="width:18px;display:flex;justify-content:center"><span style="width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,#F9D272,#BF8A44)"></span></span>
+                <span style="flex:1;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:#F7F2E9">Colours</span>
+                <span style="color:rgba(247,242,233,.4);font-size:10px">{{ chevColours }}</span>
+              </div>
+              <sc-if value="{{ openColours }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:2px 6px 16px;animation:lsaFadeUp .25s ease">
+                  <div style="font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.4);margin-bottom:8px">Accent</div>
+                  <div style="display:flex;gap:9px;flex-wrap:wrap">
+                    <sc-for list="{{ accentChips }}" as="ac" hint-placeholder-count="6">
+                      <div onClick="{{ ac.pick }}" title="{{ ac.name }}" style="{{ ac.style }}" style-hover="transform:scale(1.18)"></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- ░ MATERIALS ░ -->
+          <sc-if value="{{ showMats }}" hint-placeholder-val="{{ false }}">
+            <div style="border-bottom:1px solid rgba(247,242,233,.07)">
+              <div onClick="{{ h.togMats }}" style="display:flex;align-items:center;gap:10px;padding:13px 6px;cursor:pointer;transition:all .15s" style-hover="color:#E9C06B">
+                <span style="font-size:13px;width:18px;text-align:center;color:#D4A85C">&#10070;</span>
+                <span style="flex:1;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:#F7F2E9">Materials</span>
+                <span style="color:rgba(247,242,233,.4);font-size:10px">{{ chevMats }}</span>
+              </div>
+              <sc-if value="{{ openMats }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:2px 6px 16px;animation:lsaFadeUp .25s ease">
+                  <div style="font-size:9.5px;color:rgba(247,242,233,.35);margin-bottom:10px;line-height:1.5">Curate the library — selected materials appear on the palette slide.</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:7px">
+                    <sc-for list="{{ matChips }}" as="mc" hint-placeholder-count="8">
+                      <div onClick="{{ mc.pick }}" style="{{ mc.style }}" style-hover="border-color:rgba(212,168,92,.6)">{{ mc.name }}</div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- ░ AI ASSISTANT section ░ -->
+          <div style="border-bottom:1px solid rgba(247,242,233,.07)">
+            <div onClick="{{ h.togAi }}" style="display:flex;align-items:center;gap:10px;padding:13px 6px;cursor:pointer;transition:all .15s" style-hover="color:#E9C06B">
+              <span style="font-size:13px;width:18px;text-align:center;color:#D4A85C">&#10022;</span>
+              <span style="flex:1;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:#F7F2E9">AI Assistant</span>
+              <span style="color:rgba(247,242,233,.4);font-size:10px">{{ chevAi }}</span>
+            </div>
+            <sc-if value="{{ openAi }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:2px 6px 16px;display:flex;flex-direction:column;gap:6px;animation:lsaFadeUp .25s ease">
+                <sc-for list="{{ aiQuick }}" as="q" hint-placeholder-count="3">
+                  <div onClick="{{ q.run }}" style="display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:8px;background:rgba(247,242,233,.04);border:1px solid rgba(247,242,233,.07);font-size:11.5px;color:rgba(247,242,233,.75);cursor:pointer;transition:all .2s" style-hover="border-color:rgba(212,168,92,.5);color:#E9C06B">
+                    <span style="color:#D4A85C;font-size:12px">&#10022;</span>{{ q.label }}
+                  </div>
+                </sc-for>
+                <div onClick="{{ h.aiToggle }}" style="margin-top:4px;text-align:center;padding:9px;border-radius:8px;border:1px solid rgba(212,168,92,.4);color:#E9C06B;font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="background:rgba(212,168,92,.1)">Open assistant</div>
+              </div>
+            </sc-if>
+          </div>
+
+          <!-- ░ EXPORT ░ -->
+          <div>
+            <div onClick="{{ h.togExport }}" style="display:flex;align-items:center;gap:10px;padding:13px 6px;cursor:pointer;transition:all .15s" style-hover="color:#E9C06B">
+              <span style="font-size:13px;width:18px;text-align:center;color:#D4A85C">&#8615;</span>
+              <span style="flex:1;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:#F7F2E9">Export</span>
+              <span style="color:rgba(247,242,233,.4);font-size:10px">{{ chevExport }}</span>
+            </div>
+            <sc-if value="{{ openExport }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:2px 6px 16px;display:flex;flex-direction:column;gap:6px;animation:lsaFadeUp .25s ease">
+                <div onClick="{{ h.exportPdf }}" style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;background:rgba(247,242,233,.04);border:1px solid rgba(247,242,233,.07);font-size:11.5px;color:rgba(247,242,233,.75);cursor:pointer;transition:all .2s" style-hover="border-color:rgba(212,168,92,.5);color:#E9C06B"><span style="color:#D4A85C">&#9636;</span>PDF document</div>
+                <div onClick="{{ h.exportPptx }}" style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;background:rgba(247,242,233,.04);border:1px solid rgba(247,242,233,.07);font-size:11.5px;color:rgba(247,242,233,.75);cursor:pointer;transition:all .2s" style-hover="border-color:rgba(212,168,92,.5);color:#E9C06B"><span style="color:#D4A85C">&#9637;</span>PowerPoint deck</div>
+                <div onClick="{{ h.share }}" style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;background:rgba(247,242,233,.04);border:1px solid rgba(247,242,233,.07);font-size:11.5px;color:rgba(247,242,233,.75);cursor:pointer;transition:all .2s" style-hover="border-color:rgba(212,168,92,.5);color:#E9C06B"><span style="color:#D4A85C">&#8599;</span>Share with client</div>
+              </div>
+            </sc-if>
+          </div>
+
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ═══ AI ASSISTANT SLIDE-OVER ═══ -->
+    <sc-if value="{{ aiOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="width:330px;flex-shrink:0;background:#16163A;border-left:1px solid rgba(212,168,92,.25);display:flex;flex-direction:column;animation:lsaSlideIn .3s cubic-bezier(.16,1,.3,1)" data-screen-label="AI assistant panel">
+        <div style="padding:15px 18px;border-bottom:1px solid rgba(212,168,92,.15);display:flex;align-items:center;gap:11px">
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#F9D272,#D4A85C 55%,#BF8A44);display:flex;align-items:center;justify-content:center;color:#0D0D27;font-size:14px">&#10022;</div>
+          <div style="flex:1">
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px">Atelier Assistant</div>
+            <div style="font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:rgba(247,242,233,.4)">Design intelligence</div>
+          </div>
+          <div onClick="{{ h.aiToggle }}" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(247,242,233,.5);cursor:pointer;font-size:14px;transition:all .2s" style-hover="background:rgba(247,242,233,.08);color:#F7F2E9">&times;</div>
+        </div>
+
+        <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ aiMsgs }}" as="m" hint-placeholder-count="1">
+            <div style="{{ m.rowStyle }}">
+              <div style="{{ m.bubbleStyle }}">{{ m.text }}</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ aiBusy }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:5px;padding:10px 14px;background:rgba(247,242,233,.05);border-radius:12px 12px 12px 3px;align-self:flex-start">
+              <span style="width:5px;height:5px;border-radius:50%;background:#D4A85C;animation:lsaDots 1.2s infinite"></span>
+              <span style="width:5px;height:5px;border-radius:50%;background:#D4A85C;animation:lsaDots 1.2s .2s infinite"></span>
+              <span style="width:5px;height:5px;border-radius:50%;background:#D4A85C;animation:lsaDots 1.2s .4s infinite"></span>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="padding:10px 14px;border-top:1px solid rgba(212,168,92,.15)">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+            <sc-for list="{{ aiActions }}" as="a" hint-placeholder-count="4">
+              <div onClick="{{ a.run }}" style="padding:5px 11px;border-radius:999px;border:1px solid rgba(212,168,92,.3);font-size:10px;color:rgba(247,242,233,.65);cursor:pointer;transition:all .2s" style-hover="border-color:rgba(212,168,92,.7);color:#E9C06B;background:rgba(212,168,92,.07)">{{ a.label }}</div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input value="{{ aiInput }}" onChange="{{ h.aiType }}" onKeyDown="{{ h.aiKey }}" placeholder="Ask the atelier assistant..." style="flex:1;background:rgba(247,242,233,.06);border:1px solid rgba(247,242,233,.12);border-radius:999px;color:#F7F2E9;font-size:12px;padding:9px 15px;outline:none;font-family:'Jost',sans-serif;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)">
+            <div onClick="{{ h.aiSend }}" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#F9D272,#D4A85C 55%,#BF8A44);color:#0D0D27;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0;transition:all .2s" style-hover="filter:brightness(1.08)">&#8593;</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <!-- toast -->
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:52px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:999px;background:#16163A;border:1px solid rgba(212,168,92,.45);color:#E9C06B;font-size:11.5px;letter-spacing:.8px;z-index:60;box-shadow:0 24px 60px -20px rgba(0,0,0,.6);animation:lsaFadeUp .3s ease">{{ toast }}</div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;defaultMode&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;design&quot;, &quot;present&quot;], &quot;default&quot;: &quot;design&quot;, &quot;tsType&quot;: &quot;'design' | 'present'&quot;, &quot;section&quot;: &quot;Studio&quot; },
+  &quot;showSlideIcons&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Studio&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    mode: 'design',
+    active: 0,
+    open: 'content',
+    aiOpen: false,
+    aiBusy: false,
+    aiInput: '',
+    aiMsgs: [{ role: 'ai', text: 'Good afternoon. I can draft vision statements, moodboard narratives and room descriptions in the atelier voice. What shall we shape first?' }],
+    toast: '',
+    saved: true,
+    data: {
+      client: 'The Mehta Residence',
+      project: 'Complete Home Interior',
+      theme: 'Contemporary Luxury',
+      accent: '#D4A85C',
+      serif: "'Cormorant Garamond', serif",
+      vision: 'A home that breathes quiet luxury — where every material is chosen with intention.',
+      brief: 'Light moves through the day like a guest: welcomed in the morning, softened by evening. Every room is composed with patience, restraint and warmth.',
+      keywords: 'Warm, Sculptural, Timeless, Serene',
+      coverImg: null,
+      moodLayout: 'hero',
+      moodImgs: [null, null, null, null],
+      moodDesc: 'A palette drawn from dusk — smoked oak, honed stone and champagne light.',
+      mats: ['Smoked Oak', 'St. Laurent Marble', 'Antique Brass', 'Bouclé'],
+      rooms: {
+        living: { name: 'Living Room', num: '01', hero: null, detail: null, desc: 'Where the household gathers — a balance of warmth, elegance and effortless hospitality.', points: ['Bespoke seating in bouclé & walnut', 'Fluted stone feature wall', 'Layered ambient lighting'] },
+        kitchen: { name: 'Kitchen', num: '02', hero: null, detail: null, desc: 'Culinary theatre in quiet materials — precise, generous and beautifully lit.', points: ['Handleless smoked-oak cabinetry', 'Honed quartzite island', 'Integrated premium appliances'] },
+        bedroom: { name: 'Master Bedroom', num: '03', hero: null, detail: null, desc: 'A private sanctuary — serene, tactile and deeply personal.', points: ['Upholstered headboard wall', 'Walk-in wardrobe in ribbed glass', 'Blackout linen drapery'] }
+      }
+    }
+  };
+
+  SLIDES = [
+    { key: 'cover', icon: '🏠', label: 'Welcome', type: 'cover' },
+    { key: 'vision', icon: '✨', label: 'Vision', type: 'vision' },
+    { key: 'mood', icon: '🎨', label: 'Moodboard', type: 'mood' },
+    { key: 'living', icon: '🛋', label: 'Living Room', type: 'room' },
+    { key: 'kitchen', icon: '🍽', label: 'Kitchen', type: 'room' },
+    { key: 'bedroom', icon: '🛏', label: 'Bedroom', type: 'room' },
+    { key: 'palette', icon: '🧵', label: 'Material Palette', type: 'palette' },
+    { key: 'warranty', icon: '🛡', label: 'Warranty', type: 'warranty' },
+    { key: 'thanks', icon: '🙏', label: 'Thank You', type: 'thanks' }
+  ];
+
+  DEFAULT_OPEN = { cover: 'content', vision: 'content', mood: 'layout', room: 'images', palette: 'colours', warranty: 'content', thanks: 'content' };
+
+  componentDidMount() {
+    if ((this.props.defaultMode ?? 'design') === 'present') this.setState({ mode: 'present' });
+    this._key = (e) => {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      if (e.key === 'ArrowRight') this.nav(1);
+      if (e.key === 'ArrowLeft') this.nav(-1);
+      if (e.key === 'Escape') this.setState({ mode: 'design' });
+    };
+    window.addEventListener('keydown', this._key);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this._key); }
+
+  nav(d) {
+    this.setState(s => {
+      const n = Math.min(this.SLIDES.length - 1, Math.max(0, s.active + d));
+      const sl = this.SLIDES[n];
+      return { active: n, open: this.DEFAULT_OPEN[sl.type] || 'content' };
+    });
+  }
+  goTo(i) {
+    const sl = this.SLIDES[i];
+    this.setState({ active: i, open: this.DEFAULT_OPEN[sl.type] || 'content' });
+  }
+  setData(patch) {
+    this.setState(s => ({ data: { ...s.data, ...patch }, saved: true }));
+  }
+  setRoom(key, patch) {
+    this.setState(s => ({ data: { ...s.data, rooms: { ...s.data.rooms, [key]: { ...s.data.rooms[key], ...patch } } } }));
+  }
+  showToast(msg) {
+    this.setState({ toast: msg });
+    clearTimeout(this._tt);
+    this._tt = setTimeout(() => this.setState({ toast: '' }), 2400);
+  }
+  toggle(sec) { this.setState(s => ({ open: s.open === sec ? null : sec })); }
+
+  _loadLib(src) {
+    return new Promise((res, rej) => {
+      if (document.querySelector('script[src="' + src + '"]')) return res();
+      const t = document.createElement('script');
+      t.src = src; t.onload = res; t.onerror = () => rej(new Error('Failed to load ' + src));
+      document.head.appendChild(t);
+    });
+  }
+  async exportRealPdf() {
+    try {
+      this.showToast('Preparing PDF \u2014 loading renderer\u2026');
+      await this._loadLib('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+      await this._loadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const total = this.SLIDES.length;
+      const origActive = this.state.active;
+      const origMode = this.state.mode;
+      for (let i = 0; i < total; i++) {
+        this.setState({ active: i });
+        this.showToast('Rendering slide ' + (i + 1) + ' of ' + total + '\u2026');
+        await new Promise(r => setTimeout(r, 450));
+        const node = document.querySelector('[data-screen-label="Slide canvas"]');
+        if (!node) throw new Error('Slide canvas not found');
+        const scale = Math.max(2, Math.min(3, 1400 / node.clientWidth));
+        const canvas = await window.html2canvas(node, { scale, useCORS: true, backgroundColor: '#0D0D27', logging: false });
+        const img = canvas.toDataURL('image/jpeg', 0.92);
+        if (i > 0) pdf.addPage();
+        pdf.addImage(img, 'JPEG', 0, 0, 210, 297);
+      }
+      this.setState({ active: origActive, mode: origMode });
+      const d = this.state.data || {};
+      const fname = ((d.client || 'LSA-Client').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '_') || 'LSA') + '_Presentation.pdf';
+      pdf.save(fname);
+      this.showToast('PDF downloaded \u2014 ' + fname);
+    } catch (err) {
+      console.error('PDF export failed:', err);
+      this.showToast('PDF export failed: ' + err.message);
+    }
+  }
+
+  readFileTo(cb) {
+    return (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => cb(r.result);
+      r.readAsDataURL(f);
+      e.target.value = '';
+    };
+  }
+  dropTo(cb) {
+    return (e) => {
+      e.preventDefault();
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (!f || !f.type.startsWith('image/')) return;
+      const r = new FileReader();
+      r.onload = () => cb(r.result);
+      r.readAsDataURL(f);
+    };
+  }
+
+  runAi(label) {
+    const d = this.state.data;
+    const slide = this.SLIDES[this.state.active];
+    const REPLIES = {
+      'Generate Vision': { text: 'Here is a refined vision: "A residence composed like a piece of music — quiet passages of stone and oak, rising to moments of champagne light." I have placed it on the Vision slide.', apply: () => this.setData({ vision: 'A residence composed like a piece of music — quiet passages of stone and oak, rising to moments of champagne light.' }) },
+      'Generate Design Story': { text: 'A design story has been drafted for ' + d.client + ' — tracing the journey from first sketch to final styling, told in the atelier voice. You will find it woven into the Vision narrative.', apply: () => this.setData({ brief: 'From the first sketch, this home was conceived as a sequence of calm rooms — each one earning its silence, each material chosen to age gracefully alongside the family it serves.' }) },
+      'Generate Moodboard Description': { text: 'Moodboard narrative updated: dusk-toned, tactile, unhurried — anchoring the imagery in the ' + d.theme + ' direction.', apply: () => this.setData({ moodDesc: 'Dusk tones and tactile calm — smoked oak grounding honed stone, lifted by antique brass and champagne light.' }) },
+      'Suggest Materials': { text: 'For ' + d.theme + ', I would curate: honed Travertine, smoked oak in a rift cut, unlacquered brass, and a bouclé upholstery in bone. I have added them to the material library.', apply: () => this.setData({ mats: ['Smoked Oak', 'Travertine', 'Antique Brass', 'Bouclé'] }) },
+      'Suggest Lighting': { text: 'Lighting strategy: layer three temperatures — 2700K ambient coves, 3000K task pendants, and candle-warm 2200K accents on art and stone. Dim everything; nothing should glare.' },
+      'Rewrite in Luxury Tone': { text: 'Rewritten. The copy now speaks in the atelier register — measured, warm and precise, with no superlatives it cannot keep.', apply: () => { if (slide.type === 'room') this.setRoom(slide.key, { desc: 'A room measured in moments — morning coffee by the window, evenings folded into low light and soft wool.' }); } },
+      'Generate Client Summary': { text: 'Client summary drafted for ' + d.client + ': scope, theme, material palette and the ten-year warranty — a single elegant page, ready to export.' }
+    };
+    const rep = REPLIES[label] || { text: 'Understood — I will shape that for you.' };
+    this.setState(s => ({ aiOpen: true, aiBusy: true, aiMsgs: [...s.aiMsgs, { role: 'user', text: label }] }));
+    clearTimeout(this._ai);
+    this._ai = setTimeout(() => {
+      if (rep.apply) rep.apply();
+      this.setState(s => ({ aiBusy: false, aiMsgs: [...s.aiMsgs, { role: 'ai', text: rep.text }] }));
+    }, 1100);
+  }
+
+  sendAi() {
+    const q = this.state.aiInput.trim();
+    if (!q) return;
+    this.setState(s => ({ aiInput: '', aiBusy: true, aiMsgs: [...s.aiMsgs, { role: 'user', text: q }] }));
+    clearTimeout(this._ai);
+    this._ai = setTimeout(() => {
+      this.setState(s => ({ aiBusy: false, aiMsgs: [...s.aiMsgs, { role: 'ai', text: 'A lovely thought. I would approach it with restraint — let the material speak first, and the styling follow. Shall I draft it into the presentation?' }] }));
+    }, 1100);
+  }
+
+  renderVals() {
+    const st = this.state;
+    const d = st.data;
+    const slide = this.SLIDES[st.active];
+    const type = slide.type;
+    const roomKey = type === 'room' ? slide.key : 'living';
+    const rm = d.rooms[roomKey];
+    const showIcons = this.props.showSlideIcons ?? true;
+
+    const slides = this.SLIDES.map((s, i) => ({
+      icon: s.icon,
+      label: s.label,
+      num: String(i + 1).padStart(2, '0'),
+      go: () => this.goTo(i),
+      itemStyle: {
+        display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', borderRadius: '8px',
+        cursor: 'pointer', transition: 'all .18s',
+        border: i === st.active ? '1px solid rgba(212,168,92,.5)' : '1px solid transparent',
+        background: i === st.active ? 'rgba(212,168,92,.1)' : 'transparent',
+        color: i === st.active ? '#F7F2E9' : 'rgba(247,242,233,.55)'
+      },
+      numStyle: { fontSize: '9px', letterSpacing: '1px', color: i === st.active ? '#D4A85C' : 'rgba(247,242,233,.25)' }
+    }));
+
+    // ── sections visibility per slide type
+    const showContent = ['cover', 'vision', 'room', 'warranty', 'thanks'].includes(type);
+    const showImages = ['cover', 'mood', 'room'].includes(type);
+    const showLayout = type === 'mood';
+    const showColours = ['cover', 'mood', 'palette'].includes(type);
+    const showMats = ['mood', 'palette'].includes(type);
+    const showType = ['cover', 'vision'].includes(type);
+
+    const chev = (k) => (st.open === k ? '▾' : '▸');
+
+    // ── theme chips
+    const THEMES = ['Contemporary Luxury', 'Modern Minimalist', 'Japandi', 'Art Deco', 'Wabi-Sabi', 'Neo-Classical'];
+    const themeChips = THEMES.map(t => ({
+      name: t,
+      pick: () => this.setData({ theme: t }),
+      style: {
+        padding: '5px 11px', borderRadius: '999px', fontSize: '10.5px', cursor: 'pointer', transition: 'all .2s',
+        border: d.theme === t ? '1px solid rgba(212,168,92,.75)' : '1px solid rgba(247,242,233,.12)',
+        background: d.theme === t ? 'rgba(212,168,92,.14)' : 'transparent',
+        color: d.theme === t ? '#E9C06B' : 'rgba(247,242,233,.6)'
+      }
+    }));
+
+    // ── accent chips
+    const ACCENTS = [
+      { name: 'Champagne', hex: '#D4A85C' }, { name: 'Antique Gold', hex: '#BF8A44' },
+      { name: 'Sage', hex: '#7A9E75' }, { name: 'Slate Blue', hex: '#7090B8' },
+      { name: 'Terracotta', hex: '#C1785A' }, { name: 'Rose Clay', hex: '#C49A8A' }
+    ];
+    const accentChips = ACCENTS.map(a => ({
+      name: a.name,
+      pick: () => this.setData({ accent: a.hex }),
+      style: {
+        width: '26px', height: '26px', borderRadius: '50%', background: a.hex, cursor: 'pointer',
+        transition: 'all .2s',
+        boxShadow: d.accent === a.hex ? '0 0 0 2px #0D0D27, 0 0 0 4px ' + a.hex : 'none'
+      }
+    }));
+
+    // ── typography options
+    const FONTS = [
+      { name: 'Cormorant Garamond', tag: 'Editorial serif', fam: "'Cormorant Garamond', serif" },
+      { name: 'Georgia', tag: 'Classic serif', fam: 'Georgia, serif' },
+      { name: 'Times', tag: 'Heritage serif', fam: "'Times New Roman', serif" }
+    ];
+    const fontOpts = FONTS.map(f => ({
+      name: f.name, tag: f.tag,
+      pick: () => this.setData({ serif: f.fam }),
+      style: {
+        display: 'flex', alignItems: 'center', gap: '12px', padding: '9px 12px', borderRadius: '8px',
+        cursor: 'pointer', transition: 'all .2s',
+        border: d.serif === f.fam ? '1px solid rgba(212,168,92,.7)' : '1px solid rgba(247,242,233,.09)',
+        background: d.serif === f.fam ? 'rgba(212,168,92,.1)' : 'rgba(247,242,233,.03)'
+      },
+      aaStyle: { fontFamily: f.fam, fontStyle: 'italic', fontSize: '20px', color: '#E9C06B', width: '28px', textAlign: 'center' }
+    }));
+
+    // ── moodboard layouts
+    const LAYOUTS = {
+      hero: { name: 'Hero', grid: { gridTemplateColumns: '2fr 1fr', gridTemplateRows: '1fr 1fr' }, cells: [{ gridRow: '1 / 3' }, {}, {}], phs: ['Hero imagery', 'Texture', 'Detail'] },
+      quad: { name: 'Quad', grid: { gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }, cells: [{}, {}, {}, {}], phs: ['Imagery', 'Texture', 'Material', 'Detail'] },
+      trip: { name: 'Triptych', grid: { gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr' }, cells: [{}, {}, {}], phs: ['Imagery', 'Texture', 'Detail'] },
+      strip: { name: 'Editorial', grid: { gridTemplateColumns: '1fr', gridTemplateRows: '2fr 1fr 1fr' }, cells: [{}, {}, {}], phs: ['Hero imagery', 'Texture', 'Detail'] }
+    };
+    const L = LAYOUTS[d.moodLayout];
+    const moodGridStyle = { flex: 1, display: 'grid', gap: '0.9cqh', minHeight: 0, ...L.grid };
+    const moodCells = L.cells.map((c, i) => ({
+      img: d.moodImgs[i], empty: !d.moodImgs[i], ph: L.phs[i],
+      cellStyle: { position: 'relative', overflow: 'hidden', border: '1px solid rgba(212,168,92,.18)', background: 'rgba(247,242,233,.03)', ...c }
+    }));
+    const layoutOpts = Object.keys(LAYOUTS).map(k => {
+      const lo = LAYOUTS[k];
+      return {
+        name: lo.name,
+        pick: () => this.setData({ moodLayout: k }),
+        cardStyle: {
+          borderRadius: '8px', padding: '8px 8px 3px', cursor: 'pointer', transition: 'all .2s',
+          border: d.moodLayout === k ? '1px solid rgba(212,168,92,.75)' : '1px solid rgba(247,242,233,.09)',
+          background: d.moodLayout === k ? 'rgba(212,168,92,.1)' : 'rgba(247,242,233,.03)'
+        },
+        gridStyle: { display: 'grid', gap: '3px', height: '54px', ...lo.grid },
+        tiles: lo.cells.map(c => ({ style: { background: d.moodLayout === k ? 'rgba(212,168,92,.45)' : 'rgba(247,242,233,.14)', borderRadius: '2px', ...c } }))
+      };
+    });
+
+    // ── image slots per slide
+    const slotStyle = (h) => ({
+      position: 'relative', height: h, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      border: '1px dashed rgba(212,168,92,.4)', borderRadius: '8px', cursor: 'pointer',
+      background: 'rgba(247,242,233,.02)', transition: 'all .2s', overflow: 'hidden'
+    });
+    let imageSlots = [];
+    if (type === 'cover') {
+      imageSlots = [{ label: 'Cover image', img: d.coverImg, empty: !d.coverImg, cardStyle: slotStyle('110px'),
+        file: this.readFileTo(u => this.setData({ coverImg: u })), drop: this.dropTo(u => this.setData({ coverImg: u })), dragOver: (e) => e.preventDefault() }];
+    } else if (type === 'mood') {
+      imageSlots = L.cells.map((c, i) => ({
+        label: L.phs[i], img: d.moodImgs[i], empty: !d.moodImgs[i], cardStyle: slotStyle('72px'),
+        file: this.readFileTo(u => { const m = [...d.moodImgs]; m[i] = u; this.setData({ moodImgs: m }); }),
+        drop: this.dropTo(u => { const m = [...d.moodImgs]; m[i] = u; this.setData({ moodImgs: m }); }),
+        dragOver: (e) => e.preventDefault()
+      }));
+    } else if (type === 'room') {
+      imageSlots = [
+        { label: 'Hero image', img: rm.hero, empty: !rm.hero, cardStyle: slotStyle('100px'),
+          file: this.readFileTo(u => this.setRoom(roomKey, { hero: u })), drop: this.dropTo(u => this.setRoom(roomKey, { hero: u })), dragOver: (e) => e.preventDefault() },
+        { label: 'Detail image', img: rm.detail, empty: !rm.detail, cardStyle: slotStyle('72px'),
+          file: this.readFileTo(u => this.setRoom(roomKey, { detail: u })), drop: this.dropTo(u => this.setRoom(roomKey, { detail: u })), dragOver: (e) => e.preventDefault() }
+      ];
+    }
+
+    // ── materials
+    const MATLIB = ['Smoked Oak', 'St. Laurent Marble', 'Travertine', 'Antique Brass', 'Bouclé', 'Fluted Glass', 'Honed Quartzite', 'Aged Bronze'];
+    const matChips = MATLIB.map(m => {
+      const on = d.mats.includes(m);
+      return {
+        name: m,
+        pick: () => this.setData({ mats: on ? d.mats.filter(x => x !== m) : [...d.mats, m] }),
+        style: {
+          padding: '5px 11px', borderRadius: '999px', fontSize: '10.5px', cursor: 'pointer', transition: 'all .2s',
+          border: on ? '1px solid rgba(212,168,92,.75)' : '1px solid rgba(247,242,233,.12)',
+          background: on ? 'rgba(212,168,92,.14)' : 'transparent',
+          color: on ? '#E9C06B' : 'rgba(247,242,233,.6)'
+        }
+      };
+    });
+
+    // ── AI actions
+    const ALL_AI = ['Generate Vision', 'Generate Design Story', 'Generate Moodboard Description', 'Suggest Materials', 'Suggest Lighting', 'Rewrite in Luxury Tone', 'Generate Client Summary'];
+    const CONTEXT_AI = {
+      cover: ['Generate Client Summary', 'Rewrite in Luxury Tone'],
+      vision: ['Generate Vision', 'Generate Design Story', 'Rewrite in Luxury Tone'],
+      mood: ['Generate Moodboard Description', 'Suggest Materials'],
+      room: ['Rewrite in Luxury Tone', 'Suggest Lighting', 'Suggest Materials'],
+      palette: ['Suggest Materials'],
+      warranty: ['Generate Client Summary'],
+      thanks: ['Rewrite in Luxury Tone']
+    };
+    const mkAi = (l) => ({ label: l, run: () => this.runAi(l) });
+    const aiQuick = (CONTEXT_AI[type] || []).map(mkAi);
+    const aiActions = ALL_AI.map(mkAi);
+
+    // ── AI messages
+    const aiMsgs = st.aiMsgs.map(m => ({
+      text: m.text,
+      rowStyle: { display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' },
+      bubbleStyle: m.role === 'user'
+        ? { maxWidth: '82%', padding: '9px 13px', borderRadius: '12px 12px 3px 12px', background: 'rgba(212,168,92,.16)', border: '1px solid rgba(212,168,92,.3)', fontSize: '12px', lineHeight: 1.55, color: '#F7F2E9' }
+        : { maxWidth: '86%', padding: '10px 14px', borderRadius: '12px 12px 12px 3px', background: 'rgba(247,242,233,.05)', border: '1px solid rgba(247,242,233,.08)', fontSize: '12px', lineHeight: 1.6, color: 'rgba(247,242,233,.8)' }
+    }));
+
+    // ── palette slide swatches
+    const PAL = [
+      { name: 'Champagne', hex: d.accent }, { name: 'Midnight', hex: '#0D0D27' },
+      { name: 'Ivory', hex: '#F7F2E9' }, { name: 'Antique Bronze', hex: '#7A5526' }
+    ];
+    const paletteSwatches = PAL.map(p => ({
+      name: p.name, hex: p.hex.toUpperCase(),
+      style: {
+        flex: 1, background: p.hex, display: 'flex', alignItems: 'flex-end', padding: '1.6cqh',
+        color: (p.hex === '#F7F2E9') ? '#0D0D27' : '#F7F2E9', fontFamily: "'Jost', sans-serif"
+      }
+    }));
+
+    const h = {
+      project: (e) => this.setData({ project: e.target.value }),
+      client: (e) => this.setData({ client: e.target.value }),
+      vision: (e) => this.setData({ vision: e.target.value }),
+      keywords: (e) => this.setData({ keywords: e.target.value }),
+      roomName: (e) => this.setRoom(roomKey, { name: e.target.value }),
+      point0: (e) => { const p = [...rm.points]; p[0] = e.target.value; this.setRoom(roomKey, { points: p }); },
+      point1: (e) => { const p = [...rm.points]; p[1] = e.target.value; this.setRoom(roomKey, { points: p }); },
+      point2: (e) => { const p = [...rm.points]; p[2] = e.target.value; this.setRoom(roomKey, { points: p }); },
+      prev: () => this.nav(-1),
+      next: () => this.nav(1),
+      present: () => this.setState({ mode: 'present' }),
+      design: () => this.setState({ mode: 'design' }),
+      aiToggle: () => this.setState(s => ({ aiOpen: !s.aiOpen })),
+      aiType: (e) => this.setState({ aiInput: e.target.value }),
+      aiKey: (e) => { if (e.key === 'Enter') this.sendAi(); },
+      aiSend: () => this.sendAi(),
+      aiMood: () => this.runAi('Generate Moodboard Description'),
+      aiRoomDesc: () => this.runAi('Rewrite in Luxury Tone'),
+      exportPdf: () => this.exportRealPdf(),
+      exportPptx: () => this.showToast('PowerPoint export coming soon — PDF is ready to use'),
+      share: () => this.showToast('Share link copied — valid for 7 days'),
+      addRoom: () => this.showToast('Room templates coming to your library soon'),
+      togContent: () => this.toggle('content'),
+      togImages: () => this.toggle('images'),
+      togLayout: () => this.toggle('layout'),
+      togColours: () => this.toggle('colours'),
+      togMats: () => this.toggle('mats'),
+      togType: () => this.toggle('type'),
+      togAi: () => this.toggle('ai'),
+      togExport: () => this.toggle('export')
+    };
+
+    return {
+      isDesign: st.mode === 'design',
+      isPresent: st.mode === 'present',
+      slides, showIcons,
+      counter: 'Slide ' + (st.active + 1) + ' of ' + this.SLIDES.length,
+      activeIcon: slide.icon, activeLabel: slide.label,
+      data: d,
+      room: {
+        ...rm,
+        noHero: !rm.hero, noDetail: !rm.detail,
+        p0: rm.points[0], p1: rm.points[1], p2: rm.points[2],
+        points: rm.points.map(t => ({ text: t }))
+      },
+      keywordList: d.keywords.split(',').map(w => ({ word: w.trim() })).filter(w => w.word),
+      hasCoverImg: !!d.coverImg, noCoverImg: !d.coverImg,
+      isCover: type === 'cover', isVision: type === 'vision', isMood: type === 'mood',
+      isRoom: type === 'room', isPalette: type === 'palette', isWarranty: type === 'warranty', isThanks: type === 'thanks',
+      slideVars: { position: 'absolute', inset: 0, '--sacc': d.accent, '--sser': d.serif },
+      moodGridStyle, moodCells, layoutOpts,
+      showContent, showImages, showLayout, showColours, showMats, showType,
+      openContent: st.open === 'content', openImages: st.open === 'images', openLayout: st.open === 'layout',
+      openColours: st.open === 'colours', openMats: st.open === 'mats', openType: st.open === 'type',
+      openAi: st.open === 'ai', openExport: st.open === 'export',
+      chevContent: chev('content'), chevImages: chev('images'), chevLayout: chev('layout'),
+      chevColours: chev('colours'), chevMats: chev('mats'), chevType: chev('type'),
+      chevAi: chev('ai'), chevExport: chev('export'),
+      themeChips, accentChips, fontOpts, matChips, imageSlots,
+      selectedMats: d.mats.map(m => ({ name: m })),
+      paletteSwatches,
+      warrantyPts: [
+        { text: 'Structural warranty on all bespoke joinery' },
+        { text: 'Soft-close hardware guaranteed for life of warranty' },
+        { text: 'Annual courtesy inspection, years one to three' },
+        { text: 'Dedicated aftercare concierge' }
+      ].map(w => w),
+      aiOpen: st.aiOpen, aiBusy: st.aiBusy, aiInput: st.aiInput, aiMsgs, aiQuick, aiActions,
+      toast: st.toast,
+      savedLabel: 'Saved',
+      h
+    };
+  }
+}
+</script>
+</body>
+</html>

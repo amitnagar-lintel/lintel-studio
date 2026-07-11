@@ -1,0 +1,9 @@
+/* ============================================================
+   Lintel Space Atelier — Webfonts
+   Brand spec font: Times New Roman (serif).
+   SUBSTITUTION (flagged to client): an elegant high-contrast serif
+   — Cormorant Garamond — stands in for Times for display/headlines,
+   paired with Jost (a quiet geometric sans) for UI, labels & body.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap');
