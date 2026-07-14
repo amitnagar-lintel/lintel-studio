@@ -749,7 +749,10 @@ class Component extends DCLogic {
       await this._loadLib('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
       await this._loadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
       const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      // PDF pages are sized to the slide's true aspect ratio — stretching to a
+      // fixed A4 page distorted and compressed every image.
+      const PAGE_W = 297; // mm
+      let pdf = null;
       const total = this.SLIDES.length;
       const origActive = this.state.active;
       const origMode = this.state.mode;
@@ -759,7 +762,7 @@ class Component extends DCLogic {
         await new Promise(r => setTimeout(r, 450));
         const node = document.querySelector('[data-screen-label="Slide canvas"]');
         if (!node) throw new Error('Slide canvas not found');
-        const scale = Math.max(2, Math.min(3, 1400 / node.clientWidth));
+        const scale = Math.max(2, Math.min(4, 2600 / node.clientWidth));
         const canvas = await window.html2canvas(node, { scale, useCORS: true, backgroundColor: '#0D0D27', logging: false, onclone: (doc) => {
           doc.querySelectorAll('img').forEach((im) => {
             const st = im.getAttribute('style') || '';
@@ -773,9 +776,12 @@ class Component extends DCLogic {
             im.replaceWith(dv);
           });
         } });
-        const img = canvas.toDataURL('image/jpeg', 0.92);
-        if (i > 0) pdf.addPage();
-        pdf.addImage(img, 'JPEG', 0, 0, 297, 210);
+        const img = canvas.toDataURL('image/jpeg', 0.95);
+        const pageH = PAGE_W * canvas.height / canvas.width;
+        const orient = PAGE_W >= pageH ? 'landscape' : 'portrait';
+        if (!pdf) pdf = new jsPDF({ orientation: orient, unit: 'mm', format: [PAGE_W, pageH], compress: true });
+        else pdf.addPage([PAGE_W, pageH], orient);
+        pdf.addImage(img, 'JPEG', 0, 0, PAGE_W, pageH, undefined, 'FAST');
       }
       this.setState({ active: origActive, mode: origMode });
       const d = this.state.data || {};
