@@ -641,10 +641,27 @@
           <div onClick="{{ h.notesToggle }}" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(247,242,233,.5);cursor:pointer;font-size:14px;transition:all .2s" style-hover="background:rgba(247,242,233,.08);color:#F7F2E9">&times;</div>
         </div>
 
-        <!-- Lintel OS link -->
-        <div style="padding:12px 16px;border-bottom:1px solid rgba(212,168,92,.12);background:rgba(13,13,39,.5)">
-          <sc-if value="{{ os.loggedOut }}" hint-placeholder-val="{{ true }}">
-            <div style="font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:#D4A85C;margin-bottom:8px">Link to Lintel OS</div>
+        <!-- Lintel OS link (optional — notes work without it) -->
+        <div style="padding:10px 16px;border-bottom:1px solid rgba(212,168,92,.12);background:rgba(13,13,39,.5)">
+          <div onClick="{{ h.osPanelToggle }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:2px 0" style-hover="opacity:.85">
+            <span style="{{ os.dotStyle }}"></span>
+            <span style="flex:1;font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.6)">{{ os.statusLabel }}</span>
+            <span style="color:rgba(247,242,233,.4);font-size:10px">{{ os.chev }}</span>
+          </div>
+          <sc-if value="{{ os.panelClosed }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:10px;color:rgba(247,242,233,.35);margin-top:4px;line-height:1.5">Notes save on this device. Link Lintel OS to auto-log them in the lead&rsquo;s Activity tab.</div>
+          </sc-if>
+          <sc-if value="{{ os.showLogin }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:10px;font-size:10px;color:rgba(247,242,233,.45);line-height:1.5;margin-bottom:8px">Use your Lintel OS sign-in — the same one as os.lintelspace.com.</div>
+            <div onClick="{{ h.osGoogle }}" style="display:flex;align-items:center;justify-content:center;gap:9px;padding:9px;border-radius:6px;background:#F7F2E9;color:#0D0D27;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:9px" style-hover="filter:brightness(.95)">
+              <span style="font-family:Georgia,serif;font-weight:700;font-size:14px;background:linear-gradient(90deg,#4285F4,#EA4335 35%,#FBBC05 60%,#34A853);-webkit-background-clip:text;background-clip:text;color:transparent">G</span>
+              Continue with Google
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">
+              <span style="flex:1;height:1px;background:rgba(247,242,233,.1)"></span>
+              <span style="font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(247,242,233,.3)">or with password</span>
+              <span style="flex:1;height:1px;background:rgba(247,242,233,.1)"></span>
+            </div>
             <div style="display:flex;flex-direction:column;gap:7px">
               <input value="{{ os.email }}" onChange="{{ h.osEmail }}" placeholder="you@lintelspace.com" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.12);border-radius:6px;color:#F7F2E9;font-size:12px;padding:8px 10px;outline:none;font-family:'Jost',sans-serif" style-focus="border-color:rgba(212,168,92,.6)">
               <input type="password" value="{{ os.pw }}" onChange="{{ h.osPw }}" onKeyDown="{{ h.osPwKey }}" placeholder="Password" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.12);border-radius:6px;color:#F7F2E9;font-size:12px;padding:8px 10px;outline:none;font-family:'Jost',sans-serif" style-focus="border-color:rgba(212,168,92,.6)">
@@ -654,9 +671,8 @@
               <div onClick="{{ h.osSignIn }}" style="padding:8px;border-radius:6px;background:linear-gradient(135deg,#F9D272,#D4A85C 55%,#BF8A44);color:#0D0D27;font-size:10.5px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;text-align:center;cursor:pointer;transition:all .2s" style-hover="filter:brightness(1.07)">{{ os.signInLabel }}</div>
             </div>
           </sc-if>
-          <sc-if value="{{ os.loggedIn }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-              <span style="width:7px;height:7px;border-radius:50%;background:#9AC49A;flex-shrink:0"></span>
+          <sc-if value="{{ os.showPicker }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:8px;margin:10px 0 8px">
               <span style="flex:1;font-size:10.5px;color:rgba(247,242,233,.65);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ os.userEmail }}</span>
               <span onClick="{{ h.osSignOut }}" style="font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:rgba(247,242,233,.4);cursor:pointer" style-hover="color:#E08A8A">Sign out</span>
             </div>
@@ -674,18 +690,35 @@
           </sc-if>
         </div>
 
-        <!-- notes list -->
-        <div style="flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:9px">
-          <sc-for list="{{ noteRows }}" as="n" hint-placeholder-count="2">
-            <div style="padding:9px 12px;border-radius:9px;background:rgba(247,242,233,.04);border:1px solid rgba(247,242,233,.08)">
-              <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
-                <span style="font-size:9px;letter-spacing:.8px;color:#D4A85C">{{ n.time }}</span>
-                <span style="flex:1;font-size:9px;letter-spacing:.8px;text-transform:uppercase;color:rgba(247,242,233,.35);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ n.slide }}</span>
-                <span style="{{ n.syncStyle }}" title="{{ n.syncTitle }}">{{ n.syncIcon }}</span>
+        <!-- notes list — grouped area-wise by slide -->
+        <div style="flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ noteGroups }}" as="g" hint-placeholder-count="2">
+            <div style="border:1px solid rgba(212,168,92,.16);border-radius:10px;overflow:hidden">
+              <div onClick="{{ g.toggle }}" style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(212,168,92,.06);cursor:pointer;transition:all .15s" style-hover="background:rgba(212,168,92,.12)">
+                <span style="font-size:13px;flex-shrink:0">{{ g.icon }}</span>
+                <span style="flex:1;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#E9C06B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ g.title }}</span>
+                <span style="min-width:17px;height:17px;border-radius:999px;background:rgba(212,168,92,.15);border:1px solid rgba(212,168,92,.35);color:#E9C06B;font-size:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0">{{ g.count }}</span>
+                <span style="color:rgba(247,242,233,.4);font-size:10px;flex-shrink:0">{{ g.chev }}</span>
               </div>
-              <div style="font-size:12px;line-height:1.55;color:rgba(247,242,233,.85)">{{ n.text }}</div>
+              <sc-if value="{{ g.open }}" hint-placeholder-val="{{ true }}">
+                <div style="padding:8px;display:flex;flex-direction:column;gap:7px">
+                  <sc-for list="{{ g.rows }}" as="n" hint-placeholder-count="2">
+                    <div style="padding:8px 11px;border-radius:8px;background:rgba(247,242,233,.04);border:1px solid rgba(247,242,233,.07)">
+                      <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
+                        <span style="font-size:9px;letter-spacing:.8px;color:#D4A85C">{{ n.time }}</span>
+                        <span style="flex:1"></span>
+                        <span style="{{ n.syncStyle }}" title="{{ n.syncTitle }}">{{ n.syncIcon }}</span>
+                      </div>
+                      <div style="font-size:12px;line-height:1.55;color:rgba(247,242,233,.85)">{{ n.text }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
             </div>
           </sc-for>
+          <sc-if value="{{ noNotes }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;padding:26px 14px;color:rgba(247,242,233,.3);font-size:11.5px;line-height:1.7">Notes are grouped by the slide you are on.<br>Open the Foyer slide, note the discussion — it files under &ldquo;Foyer&rsquo;s notes&rdquo;.</div>
+          </sc-if>
         </div>
 
         <!-- composer + actions -->
@@ -776,8 +809,9 @@ class Component extends DCLogic {
     notesOpen: false,
     noteInput: '',
     notes: [],
+    noteGroupClosed: {},
     pitchOn: false,
-    os: { stage: 'out', email: '', pw: '', busy: false, err: '', userId: null, userEmail: '', targets: [], filter: '', sel: null, selLabel: '' },
+    os: { stage: 'out', panelOpen: false, email: '', pw: '', busy: false, err: '', userId: null, userEmail: '', targets: [], filter: '', sel: null, selLabel: '' },
     data: {
       client: 'The Mehta Residence',
       project: 'Complete Home Interior',
@@ -844,7 +878,12 @@ class Component extends DCLogic {
       const pad = JSON.parse(localStorage.getItem('lsa_studio_pad_v1') || 'null');
       if (pad) this.setState(s => ({ notes: pad.notes || [], os: { ...s.os, sel: pad.sel || null, selLabel: pad.selLabel || '' } }));
     } catch (e) { /* corrupt pad state — start fresh */ }
-    if (localStorage.getItem('lsa-studio-auth')) this.osInit(); // silently resume Lintel OS link
+    if (/access_token=/.test(location.hash)) {
+      // returning from Google sign-in — open the pad and finish the connection
+      this.setState(s => ({ notesOpen: true, os: { ...s.os, panelOpen: true } }), () => this.osInit());
+    } else if (localStorage.getItem('lsa-studio-auth')) {
+      this.osInit(); // silently resume Lintel OS link
+    }
     this._key = (e) => {
       const t = e.target;
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
@@ -988,6 +1027,21 @@ class Component extends DCLogic {
       }
     } catch (e) { this.setOs({ stage: 'login', err: 'Could not reach Lintel OS — check connection.' }); }
   }
+  async osGoogle() {
+    this.setOs({ busy: true, err: '' });
+    try {
+      const sb = await this._sb();
+      const { error } = await sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: location.href.split('#')[0].split('?')[0],
+          queryParams: { hd: this.OS_DOMAIN, prompt: 'select_account' }
+        }
+      });
+      if (error) this.setOs({ busy: false, err: error.message });
+      // on success the browser redirects to Google and back — session is picked up on return
+    } catch (e) { this.setOs({ busy: false, err: e.message }); }
+  }
   async osSignIn() {
     const { email, pw } = this.state.os;
     if (!email.endsWith('@' + this.OS_DOMAIN)) return this.setOs({ err: 'Use your @' + this.OS_DOMAIN + ' email.' });
@@ -1020,6 +1074,18 @@ class Component extends DCLogic {
         ...(leads || []).map(l => ({ leadId: l.id, label: l.name || ('Lead #' + l.id), kind: 'Lead' }))
       ];
       this.setOs({ targets });
+      // Auto-match the presentation's client name to a lead/project (manual override always available)
+      if (!this.state.os.sel && targets.length) {
+        const client = (this.state.data.client || '').toLowerCase().replace(/^the\s+/, '').replace(/\s+(residence|home|villa|house|apartment|flat)$/, '').trim();
+        const hit = client.length > 2 && targets.find(t => {
+          const tl = t.label.toLowerCase();
+          return tl.includes(client) || client.includes(tl);
+        });
+        if (hit) {
+          this.setOs({ sel: hit.leadId, selLabel: hit.kind + ' · ' + hit.label }, () => { this._persistNotes(); this.syncPending(); });
+          this.showToast('Matched to “' + hit.label + '” — change it anytime');
+        }
+      }
     } catch (e) { this.setOs({ err: 'Could not load leads/projects: ' + e.message }); }
   }
   async pushNote(n) {
@@ -1383,15 +1449,34 @@ class Component extends DCLogic {
       custom: (d.pitchNotes || {})[slide.key] || ''
     };
 
-    // ── Discussion Pad model ──
-    const noteRows = st.notes.slice().reverse().map(n => ({
+    // ── Discussion Pad model: notes bifurcated area-wise by slide name ──
+    const mkNoteRow = (n) => ({
       time: new Date(n.ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-      slide: n.slide,
       text: n.text,
       syncIcon: n.synced ? '✓' : '·',
       syncStyle: { fontSize: '10px', flexShrink: 0, color: n.synced ? '#9AC49A' : 'rgba(247,242,233,.3)' },
       syncTitle: n.synced ? 'Synced to Lintel OS' : 'Not synced yet'
-    }));
+    });
+    const slideOrder = this.SLIDES.map(s => s.label);
+    const groupLabels = [...new Set(st.notes.map(n => n.slide))]
+      .sort((a, b) => {
+        const ia = slideOrder.indexOf(a), ib = slideOrder.indexOf(b);
+        return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      });
+    const noteGroups = groupLabels.map(label => {
+      const rows = st.notes.filter(n => n.slide === label).slice().reverse();
+      const open = !st.noteGroupClosed[label];
+      const sl = this.SLIDES.find(s => s.label === label);
+      return {
+        title: label + '’s notes',
+        icon: (sl && sl.icon) || '✎',
+        count: String(rows.length),
+        open,
+        chev: open ? '▾' : '▸',
+        toggle: () => this.setState(s => ({ noteGroupClosed: { ...s.noteGroupClosed, [label]: !s.noteGroupClosed[label] } })),
+        rows: rows.map(mkNoteRow)
+      };
+    });
 
     // ── Lintel OS model ──
     const os = st.os;
@@ -1446,8 +1531,10 @@ class Component extends DCLogic {
       osPw: (e) => this.setOs({ pw: e.target.value }),
       osPwKey: (e) => { if (e.key === 'Enter') this.osSignIn(); },
       osSignIn: () => this.osSignIn(),
+      osGoogle: () => this.osGoogle(),
       osSignOut: () => this.osSignOut(),
       osFilter: (e) => this.setOs({ filter: e.target.value }),
+      osPanelToggle: () => this.setOs({ panelOpen: !os.panelOpen }),
       togPitch: () => this.toggle('pitch'),
       togContent: () => this.toggle('content'),
       togImages: () => this.toggle('images'),
@@ -1502,13 +1589,22 @@ class Component extends DCLogic {
       pitch, openPitch: st.open === 'pitch', chevPitch: chev('pitch'),
       pitchOn: st.pitchOn,
       pitchCuesVisible: st.mode === 'present' && st.pitchOn,
-      notesOpen: st.notesOpen, noteInput: st.noteInput, noteRows,
+      notesOpen: st.notesOpen, noteInput: st.noteInput, noteGroups,
       noteCount: st.notes.length,
+      noNotes: st.notes.length === 0,
       pendingCount: st.notes.filter(n => !n.synced).length,
       hasPending: st.notes.some(n => !n.synced),
       hasNotes: st.notes.length > 0,
       os: {
         loggedOut: os.stage !== 'in', loggedIn: os.stage === 'in',
+        panelClosed: !os.panelOpen,
+        showLogin: os.panelOpen && os.stage !== 'in',
+        showPicker: os.panelOpen && os.stage === 'in',
+        chev: os.panelOpen ? '▾' : '▸',
+        statusLabel: os.stage === 'in'
+          ? (os.sel ? 'Lintel OS · ' + (os.selLabel || '').replace(/^(Lead|Project) · /, '') : 'Lintel OS · pick a lead')
+          : 'Lintel OS · optional',
+        dotStyle: { width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0, background: os.stage === 'in' ? (os.sel ? '#9AC49A' : '#E9C06B') : 'rgba(247,242,233,.25)' },
         email: os.email, pw: os.pw, err: os.err, busy: os.busy,
         userEmail: os.userEmail, filter: os.filter,
         linked: !!os.sel, selLabel: os.selLabel || 'No lead / project selected',
