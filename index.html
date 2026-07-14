@@ -824,6 +824,7 @@
         <sc-for list="{{ linkTargets }}" as="t" hint-placeholder-count="4">
           <div onClick="{{ t.pick }}" style="{{ t.style }}" style-hover="border-color:rgba(212,168,92,.55)">
             <span style="font-size:8.5px;letter-spacing:1px;text-transform:uppercase;color:#D4A85C;flex-shrink:0;width:46px">{{ t.kind }}</span>
+            <span style="font-size:10px;color:#E9C06B;flex-shrink:0;font-family:'Jost',monospace">{{ t.num }}</span>
             <span style="flex:1;font-size:12px;color:rgba(247,242,233,.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.label }}</span>
           </div>
         </sc-for>
@@ -1218,8 +1219,8 @@ class Component extends DCLogic {
         sb.from('projects').select('id,code,name,lead_id').order('id', { ascending: false }).limit(200)
       ]);
       const targets = [
-        ...(projs || []).filter(p => p.lead_id).map(p => ({ leadId: p.lead_id, label: (p.code ? p.code + ' · ' : '') + (p.name || 'Project'), kind: 'Project' })),
-        ...(leads || []).map(l => ({ leadId: l.id, label: l.name || ('Lead #' + l.id), kind: 'Lead' }))
+        ...(projs || []).filter(p => p.lead_id).map(p => ({ leadId: p.lead_id, num: p.lead_id, name: p.name || 'Project', label: (p.code ? p.code + ' · ' : '') + (p.name || 'Project'), kind: 'Project' })),
+        ...(leads || []).map(l => ({ leadId: l.id, num: l.id, name: l.name || ('Lead #' + l.id), label: l.name || ('Lead #' + l.id), kind: 'Lead' }))
       ];
       this.setOs({ targets });
       if (this._consumeDeepLink()) return; // opened a specific deck / pre-linked a lead from Lintel OS
@@ -1364,7 +1365,7 @@ class Component extends DCLogic {
       this.setState(s => ({
         data: { ...s.data, ...doc },
         pres: { id: row.id, savedAt: '' },
-        os: row.lead_id ? { ...s.os, sel: row.lead_id, selLabel: tgt ? tgt.kind + ' · ' + tgt.label : s.os.selLabel } : s.os,
+        os: row.lead_id ? { ...s.os, sel: row.lead_id, selLabel: tgt ? tgt.kind + ' #' + tgt.num + ' · ' + tgt.name : ('Lead #' + row.lead_id) } : s.os,
         active: 0, presOpen: false, notesOpen: false, saved: true
       }));
       try { localStorage.setItem('lsa_last_pres', row.id); } catch (e) { /* non-fatal */ }
@@ -1385,7 +1386,7 @@ class Component extends DCLogic {
       if (leadId) {
         localStorage.removeItem('lsa_open_lead');
         const t = (this.state.os.targets || []).find(x => String(x.leadId) === String(leadId));
-        if (t) { this.setOs({ sel: t.leadId, selLabel: t.kind + ' · ' + t.label }); this.showToast('New presentation for: ' + t.label); }
+        if (t) this.chooseProject(t); // auto-links + auto-fills client from the lead
         else this.setOs({ sel: isNaN(+leadId) ? leadId : +leadId });
         this.setState({ notesOpen: false });
         return true;
@@ -1411,11 +1412,17 @@ class Component extends DCLogic {
     this.setState(s => ({ linkOpen: true, linkForNew: !!forNew, presOpen: false, os: { ...s.os, filter: '' } }));
     if (!this.state.os.targets.length) this.osLoadTargets();
   }
-  chooseProject(leadId, kind, label) {
-    this.setOs({ sel: leadId, selLabel: kind + ' · ' + label }, () => {
+  chooseProject(t) {
+    const selLabel = t.kind + ' #' + t.num + ' · ' + t.name;
+    // Auto-fill the client name from the lead on decks not yet saved (don't clobber a saved deck's client)
+    const fillClient = !this.state.pres.id && t.name;
+    this.setState(s => ({
+      os: { ...s.os, sel: t.leadId, selLabel },
+      data: fillClient ? { ...s.data, client: t.name, leadNo: t.num, leadName: t.name } : { ...s.data, leadNo: t.num, leadName: t.name },
+      linkOpen: false, saved: true
+    }), () => {
       this._persistNotes();
-      this.setState({ linkOpen: false });
-      this.showToast('Linked to ' + label);
+      this.showToast('Linked to ' + t.kind + ' #' + t.num + ' · ' + t.name);
       this.syncPending();
       if (this.state.pres.id) this.presSave(true); // re-point an already-saved deck
     });
@@ -1855,7 +1862,7 @@ class Component extends DCLogic {
       .slice(0, 12)
       .map(t => ({
         label: t.label, kind: t.kind,
-        pick: () => this.setOs({ sel: t.leadId, selLabel: t.kind + ' · ' + t.label }, () => { this._persistNotes(); this.syncPending(); this.showToast('Notes will log to: ' + t.label); }),
+        pick: () => this.chooseProject(t),
         style: {
           display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '7px', cursor: 'pointer',
           border: os.sel === t.leadId ? '1px solid rgba(212,168,92,.6)' : '1px solid rgba(247,242,233,.07)',
@@ -1995,8 +2002,8 @@ class Component extends DCLogic {
         .filter(t => { const q = (os.filter || '').toLowerCase(); return !q || t.label.toLowerCase().includes(q); })
         .slice(0, 60)
         .map(t => ({
-          label: t.label, kind: t.kind,
-          pick: () => this.chooseProject(t.leadId, t.kind, t.label),
+          label: t.label, kind: t.kind, num: '#' + t.num,
+          pick: () => this.chooseProject(t),
           style: {
             display: 'flex', alignItems: 'center', gap: '9px', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer',
             border: os.sel === t.leadId ? '1px solid rgba(212,168,92,.6)' : '1px solid rgba(247,242,233,.08)',
