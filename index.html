@@ -59,6 +59,12 @@
         <div onClick="{{ h.aiToggle }}" style="display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:8px;border:1px solid rgba(212,168,92,.4);color:#E9C06B;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="background:rgba(212,168,92,.1);box-shadow:0 8px 28px -8px rgba(191,138,68,.45)">
           <span style="font-size:13px">&#10022;</span> Assistant
         </div>
+        <div onClick="{{ h.notesToggle }}" style="display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:8px;border:1px solid rgba(247,242,233,.14);color:rgba(247,242,233,.7);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="border-color:rgba(212,168,92,.5);color:#E9C06B">
+          <span style="font-size:13px">&#9998;</span> Notes
+          <sc-if value="{{ hasNotes }}" hint-placeholder-val="{{ false }}">
+            <span style="min-width:16px;height:16px;border-radius:999px;background:rgba(212,168,92,.2);border:1px solid rgba(212,168,92,.45);color:#E9C06B;font-size:9px;display:flex;align-items:center;justify-content:center;padding:0 4px">{{ noteCount }}</span>
+          </sc-if>
+        </div>
         <div onClick="{{ h.share }}" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(247,242,233,.14);color:rgba(247,242,233,.7);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="border-color:rgba(247,242,233,.32);color:#F7F2E9">Share</div>
         <div onClick="{{ h.exportPdf }}" style="padding:7px 16px;border-radius:8px;background:linear-gradient(135deg,#F9D272,#D4A85C 55%,#BF8A44);color:#0D0D27;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="filter:brightness(1.07)">Export</div>
         <div style="width:30px;height:30px;border-radius:50%;background:#23234F;border:1px solid rgba(247,242,233,.14);display:flex;align-items:center;justify-content:center;font-size:11px;color:#E9C06B;cursor:pointer;margin-left:2px" style-hover="border-color:rgba(212,168,92,.5)" title="Settings — Ananya">A</div>
@@ -80,12 +86,18 @@
                 <span style="font-size:14px;width:20px;text-align:center;flex-shrink:0">{{ s.icon }}</span>
               </sc-if>
               <span style="flex:1;font-size:12.5px;letter-spacing:.3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.label }}</span>
+              <sc-if value="{{ s.deletable }}" hint-placeholder-val="{{ false }}">
+                <span onClick="{{ s.del }}" title="Remove slide" style="width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(224,138,138,.45);cursor:pointer;flex-shrink:0;transition:all .15s" style-hover="background:rgba(224,110,110,.15);color:#E08A8A">&#10005;</span>
+              </sc-if>
               <span style="{{ s.numStyle }}">{{ s.num }}</span>
             </div>
           </sc-for>
         </div>
-        <div style="padding:12px 14px;border-top:1px solid rgba(212,168,92,.12)">
+        <div style="padding:12px 14px;border-top:1px solid rgba(212,168,92,.12);display:flex;flex-direction:column;gap:7px">
           <div onClick="{{ h.addRoom }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:9px;border:1px dashed rgba(212,168,92,.35);border-radius:8px;color:#D4A85C;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="background:rgba(212,168,92,.08);border-color:rgba(212,168,92,.6)">+ Add Slide</div>
+          <sc-if value="{{ hasRemoved }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ h.restore }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:7px;border:1px solid rgba(247,242,233,.1);border-radius:8px;color:rgba(247,242,233,.5);font-size:10px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="border-color:rgba(212,168,92,.4);color:#E9C06B">&#8634; Restore slides</div>
+          </sc-if>
         </div>
       </div>
     </sc-if>
@@ -103,6 +115,27 @@
       <!-- exit present -->
       <sc-if value="{{ isPresent }}" hint-placeholder-val="{{ false }}">
         <div data-lsa-present="1" onClick="{{ h.design }}" style="position:absolute;top:16px;right:20px;padding:7px 16px;border-radius:999px;border:1px solid rgba(212,168,92,.4);background:rgba(13,13,39,.8);color:#E9C06B;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;cursor:pointer;z-index:7;backdrop-filter:blur(6px);animation:lsaFadeIn .5s ease;transition:all .2s" style-hover="background:rgba(212,168,92,.14)">Exit &middot; Esc</div>
+      </sc-if>
+
+      <!-- presenter tools (present mode only — never captured in the PDF) -->
+      <sc-if value="{{ isPresent }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:16px;left:20px;display:flex;gap:8px;z-index:7;animation:lsaFadeIn .5s ease">
+          <div onClick="{{ h.pitchToggle }}" style="padding:7px 16px;border-radius:999px;border:1px solid rgba(212,168,92,.4);background:rgba(13,13,39,.8);color:#E9C06B;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(6px);transition:all .2s" style-hover="background:rgba(212,168,92,.14)">&#127919; Pitch cues</div>
+          <div onClick="{{ h.notesToggle }}" style="padding:7px 16px;border-radius:999px;border:1px solid rgba(247,242,233,.2);background:rgba(13,13,39,.8);color:rgba(247,242,233,.75);font-size:10px;letter-spacing:1.8px;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(6px);transition:all .2s" style-hover="border-color:rgba(212,168,92,.5);color:#E9C06B">&#9998; Notes <sc-if value="{{ hasNotes }}" hint-placeholder-val="{{ false }}"><span style="color:#D4A85C">&middot; {{ noteCount }}</span></sc-if></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ pitchCuesVisible }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:20px;top:62px;width:290px;max-height:calc(100% - 130px);overflow-y:auto;z-index:7;background:rgba(13,13,39,.92);border:1px solid rgba(212,168,92,.3);border-radius:12px;padding:15px 16px;backdrop-filter:blur(10px);animation:lsaSlideIn .25s ease;box-shadow:0 24px 60px -20px rgba(0,0,0,.7)">
+          <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#D4A85C;margin-bottom:8px">{{ activeLabel }} &middot; Pitch cues</div>
+          <div style="font-size:12px;font-style:italic;line-height:1.6;color:rgba(247,242,233,.9);margin-bottom:10px">{{ pitch.hook }}</div>
+          <sc-for list="{{ pitch.points }}" as="p" hint-placeholder-count="3">
+            <div style="display:flex;gap:7px;font-size:11.5px;line-height:1.55;color:rgba(247,242,233,.7);margin-bottom:5px"><span style="color:#D4A85C;flex-shrink:0">&#10022;</span><span>{{ p.text }}</span></div>
+          </sc-for>
+          <div style="margin-top:9px;padding-top:9px;border-top:1px solid rgba(247,242,233,.1);font-size:11.5px;line-height:1.55;color:#9AC49A;font-style:italic">Ask: {{ pitch.ask }}</div>
+          <sc-if value="{{ pitch.custom }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:9px;padding:8px 10px;border-radius:8px;background:rgba(212,168,92,.1);border:1px solid rgba(212,168,92,.3);font-size:11.5px;line-height:1.55;color:#E9C06B">{{ pitch.custom }}</div>
+          </sc-if>
+        </div>
       </sc-if>
 
       <!-- ═══ THE SLIDE (A4 portrait) ═══ -->
@@ -331,6 +364,41 @@
         </div>
 
         <div style="flex:1;overflow-y:auto;padding:8px 12px 16px">
+
+          <!-- ░ PITCH ASSIST ░ -->
+          <div style="border-bottom:1px solid rgba(247,242,233,.07)">
+            <div onClick="{{ h.togPitch }}" style="display:flex;align-items:center;gap:10px;padding:13px 6px;cursor:pointer;transition:all .15s" style-hover="color:#E9C06B">
+              <span style="font-size:13px;width:18px;text-align:center;color:#D4A85C">&#127919;</span>
+              <span style="flex:1;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:#F7F2E9">Pitch Assist</span>
+              <span style="color:rgba(247,242,233,.4);font-size:10px">{{ chevPitch }}</span>
+            </div>
+            <sc-if value="{{ openPitch }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:2px 6px 16px;display:flex;flex-direction:column;gap:11px;animation:lsaFadeUp .25s ease">
+                <div style="padding:10px 12px;border-radius:8px;background:rgba(212,168,92,.08);border:1px solid rgba(212,168,92,.25)">
+                  <div style="font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#D4A85C;margin-bottom:5px">Opening hook</div>
+                  <div style="font-size:11.5px;line-height:1.6;color:rgba(247,242,233,.85);font-style:italic">{{ pitch.hook }}</div>
+                </div>
+                <div>
+                  <div style="font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.4);margin-bottom:6px">Talking points</div>
+                  <sc-for list="{{ pitch.points }}" as="p" hint-placeholder-count="3">
+                    <div style="display:flex;gap:8px;font-size:11.5px;line-height:1.55;color:rgba(247,242,233,.7);margin-bottom:5px"><span style="color:#D4A85C;flex-shrink:0">&#10022;</span><span>{{ p.text }}</span></div>
+                  </sc-for>
+                </div>
+                <div style="padding:9px 12px;border-radius:8px;background:rgba(224,110,110,.06);border:1px solid rgba(224,110,110,.2)">
+                  <div style="font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#E08A8A;margin-bottom:5px">If they push back</div>
+                  <div style="font-size:11.5px;line-height:1.6;color:rgba(247,242,233,.75)">{{ pitch.objection }}</div>
+                </div>
+                <div style="padding:9px 12px;border-radius:8px;background:rgba(154,196,154,.06);border:1px solid rgba(154,196,154,.2)">
+                  <div style="font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#9AC49A;margin-bottom:5px">Question to ask</div>
+                  <div style="font-size:11.5px;line-height:1.6;color:rgba(247,242,233,.75);font-style:italic">{{ pitch.ask }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <label style="font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(247,242,233,.4)">My notes for this slide</label>
+                  <textarea value="{{ pitch.custom }}" onChange="{{ h.pitchCustom }}" placeholder="e.g. Client loves walnut — lead with the veneer story…" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.1);border-radius:6px;color:#F7F2E9;font-size:12px;padding:8px 10px;outline:none;font-family:'Jost',sans-serif;min-height:54px;resize:vertical;line-height:1.5;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)"></textarea>
+                </div>
+              </div>
+            </sc-if>
+          </div>
 
           <!-- ░ CONTENT ░ -->
           <sc-if value="{{ showContent }}" hint-placeholder-val="{{ true }}">
@@ -561,6 +629,84 @@
       </div>
     </sc-if>
 
+    <!-- ═══ DISCUSSION PAD SLIDE-OVER ═══ -->
+    <sc-if value="{{ notesOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="width:330px;flex-shrink:0;background:#16163A;border-left:1px solid rgba(212,168,92,.25);display:flex;flex-direction:column;animation:lsaSlideIn .3s cubic-bezier(.16,1,.3,1)" data-screen-label="Discussion pad panel">
+        <div style="padding:15px 18px;border-bottom:1px solid rgba(212,168,92,.15);display:flex;align-items:center;gap:11px">
+          <div style="width:30px;height:30px;border-radius:50%;background:rgba(212,168,92,.15);border:1px solid rgba(212,168,92,.4);display:flex;align-items:center;justify-content:center;color:#E9C06B;font-size:13px">&#9998;</div>
+          <div style="flex:1">
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px">Discussion Pad</div>
+            <div style="font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:rgba(247,242,233,.4)">Client meeting notes</div>
+          </div>
+          <div onClick="{{ h.notesToggle }}" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(247,242,233,.5);cursor:pointer;font-size:14px;transition:all .2s" style-hover="background:rgba(247,242,233,.08);color:#F7F2E9">&times;</div>
+        </div>
+
+        <!-- Lintel OS link -->
+        <div style="padding:12px 16px;border-bottom:1px solid rgba(212,168,92,.12);background:rgba(13,13,39,.5)">
+          <sc-if value="{{ os.loggedOut }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:#D4A85C;margin-bottom:8px">Link to Lintel OS</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <input value="{{ os.email }}" onChange="{{ h.osEmail }}" placeholder="you@lintelspace.com" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.12);border-radius:6px;color:#F7F2E9;font-size:12px;padding:8px 10px;outline:none;font-family:'Jost',sans-serif" style-focus="border-color:rgba(212,168,92,.6)">
+              <input type="password" value="{{ os.pw }}" onChange="{{ h.osPw }}" onKeyDown="{{ h.osPwKey }}" placeholder="Password" style="background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.12);border-radius:6px;color:#F7F2E9;font-size:12px;padding:8px 10px;outline:none;font-family:'Jost',sans-serif" style-focus="border-color:rgba(212,168,92,.6)">
+              <sc-if value="{{ os.err }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:10.5px;color:#E08A8A;line-height:1.5">{{ os.err }}</div>
+              </sc-if>
+              <div onClick="{{ h.osSignIn }}" style="padding:8px;border-radius:6px;background:linear-gradient(135deg,#F9D272,#D4A85C 55%,#BF8A44);color:#0D0D27;font-size:10.5px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;text-align:center;cursor:pointer;transition:all .2s" style-hover="filter:brightness(1.07)">{{ os.signInLabel }}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ os.loggedIn }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <span style="width:7px;height:7px;border-radius:50%;background:#9AC49A;flex-shrink:0"></span>
+              <span style="flex:1;font-size:10.5px;color:rgba(247,242,233,.65);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ os.userEmail }}</span>
+              <span onClick="{{ h.osSignOut }}" style="font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:rgba(247,242,233,.4);cursor:pointer" style-hover="color:#E08A8A">Sign out</span>
+            </div>
+            <div style="font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#D4A85C;margin-bottom:6px">Log notes to</div>
+            <div style="{{ os.selStyle }}">{{ os.selLabel }}</div>
+            <input value="{{ os.filter }}" onChange="{{ h.osFilter }}" placeholder="Search lead or project…" style="width:100%;box-sizing:border-box;background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.12);border-radius:6px;color:#F7F2E9;font-size:11.5px;padding:7px 10px;outline:none;font-family:'Jost',sans-serif;margin-bottom:7px" style-focus="border-color:rgba(212,168,92,.6)">
+            <div style="max-height:132px;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
+              <sc-for list="{{ osTargets }}" as="t" hint-placeholder-count="3">
+                <div onClick="{{ t.pick }}" style="{{ t.style }}" style-hover="border-color:rgba(212,168,92,.45)">
+                  <span style="font-size:8.5px;letter-spacing:1px;text-transform:uppercase;color:#D4A85C;flex-shrink:0">{{ t.kind }}</span>
+                  <span style="flex:1;font-size:11.5px;color:rgba(247,242,233,.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- notes list -->
+        <div style="flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ noteRows }}" as="n" hint-placeholder-count="2">
+            <div style="padding:9px 12px;border-radius:9px;background:rgba(247,242,233,.04);border:1px solid rgba(247,242,233,.08)">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+                <span style="font-size:9px;letter-spacing:.8px;color:#D4A85C">{{ n.time }}</span>
+                <span style="flex:1;font-size:9px;letter-spacing:.8px;text-transform:uppercase;color:rgba(247,242,233,.35);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ n.slide }}</span>
+                <span style="{{ n.syncStyle }}" title="{{ n.syncTitle }}">{{ n.syncIcon }}</span>
+              </div>
+              <div style="font-size:12px;line-height:1.55;color:rgba(247,242,233,.85)">{{ n.text }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- composer + actions -->
+        <div style="padding:10px 14px;border-top:1px solid rgba(212,168,92,.15)">
+          <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ h.noteSync }}" style="margin-bottom:8px;padding:6px 10px;border-radius:6px;border:1px solid rgba(212,168,92,.35);color:#E9C06B;font-size:10px;letter-spacing:1px;text-transform:uppercase;text-align:center;cursor:pointer;transition:all .2s" style-hover="background:rgba(212,168,92,.1)">&#8635; Sync {{ pendingCount }} pending to Lintel OS</div>
+          </sc-if>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <input value="{{ noteInput }}" onChange="{{ h.noteType }}" onKeyDown="{{ h.noteKey }}" placeholder="Note a discussion point…" style="flex:1;background:rgba(247,242,233,.06);border:1px solid rgba(247,242,233,.12);border-radius:999px;color:#F7F2E9;font-size:12px;padding:9px 15px;outline:none;font-family:'Jost',sans-serif;transition:border-color .2s" style-focus="border-color:rgba(212,168,92,.6)">
+            <div onClick="{{ h.noteAdd }}" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#F9D272,#D4A85C 55%,#BF8A44);color:#0D0D27;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0;transition:all .2s" style-hover="filter:brightness(1.08)">&#43;</div>
+          </div>
+          <sc-if value="{{ hasNotes }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:12px;justify-content:center">
+              <span onClick="{{ h.noteCopy }}" style="font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(247,242,233,.4);cursor:pointer" style-hover="color:#E9C06B">Copy all</span>
+              <span onClick="{{ h.noteClear }}" style="font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(247,242,233,.4);cursor:pointer" style-hover="color:#E08A8A">Clear</span>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
     <!-- ═══ AI ASSISTANT SLIDE-OVER ═══ -->
     <sc-if value="{{ aiOpen }}" hint-placeholder-val="{{ false }}">
       <div style="width:330px;flex-shrink:0;background:#16163A;border-left:1px solid rgba(212,168,92,.25);display:flex;flex-direction:column;animation:lsaSlideIn .3s cubic-bezier(.16,1,.3,1)" data-screen-label="AI assistant panel">
@@ -627,6 +773,11 @@ class Component extends DCLogic {
     aiMsgs: [{ role: 'ai', text: 'Good afternoon. I can draft vision statements, moodboard narratives and room descriptions in the atelier voice. What shall we shape first?' }],
     toast: '',
     saved: true,
+    notesOpen: false,
+    noteInput: '',
+    notes: [],
+    pitchOn: false,
+    os: { stage: 'out', email: '', pw: '', busy: false, err: '', userId: null, userEmail: '', targets: [], filter: '', sel: null, selLabel: '' },
     data: {
       client: 'The Mehta Residence',
       project: 'Complete Home Interior',
@@ -636,6 +787,8 @@ class Component extends DCLogic {
       vision: 'A home that breathes quiet luxury — where every material is chosen with intention.',
       brief: 'Light moves through the day like a guest: welcomed in the morning, softened by evening. Every room is composed with patience, restraint and warmth.',
       keywords: 'Warm, Sculptural, Timeless, Serene',
+      removed: [],
+      pitchNotes: {},
       coverImg: null,
       moodLayout: 'hero',
       moodImgs: [null, null, null, null],
@@ -662,11 +815,17 @@ class Component extends DCLogic {
     { key: 'thanks', icon: '🙏', label: 'Thank You', type: 'thanks' }
   ];
   get SLIDES() {
-    const gals = ((this.state && this.state.data && this.state.data.galleries) || []).map((g, i) => (
+    const d = (this.state && this.state.data) || {};
+    const gals = (d.galleries || []).map((g, i) => (
       { key: 'gal' + i, icon: '🖼', label: g.name || ('Gallery ' + (i + 1)), type: 'gallery', gi: i }
     ));
-    return [...this.BASE_SLIDES.slice(0, 6), ...gals, ...this.BASE_SLIDES.slice(6)];
+    const removed = d.removed || [];
+    // First 3 (cover, vision, mood) and last 2 (warranty, thanks) are permanent;
+    // everything between can be deleted by the designer.
+    const mid = this.BASE_SLIDES.slice(3, 7).filter(s => !removed.includes(s.key));
+    return [...this.BASE_SLIDES.slice(0, 3), ...mid, ...gals, ...this.BASE_SLIDES.slice(7)];
   }
+  LOCKED_KEYS = ['cover', 'vision', 'mood', 'warranty', 'thanks'];
 
   DEFAULT_OPEN = { cover: 'content', vision: 'content', mood: 'layout', room: 'images', palette: 'colours', warranty: 'content', thanks: 'content', gallery: 'content' };
 
@@ -681,6 +840,11 @@ class Component extends DCLogic {
 
   componentDidMount() {
     if ((this.props.defaultMode ?? 'design') === 'present') this.setState({ mode: 'present' });
+    try {
+      const pad = JSON.parse(localStorage.getItem('lsa_studio_pad_v1') || 'null');
+      if (pad) this.setState(s => ({ notes: pad.notes || [], os: { ...s.os, sel: pad.sel || null, selLabel: pad.selLabel || '' } }));
+    } catch (e) { /* corrupt pad state — start fresh */ }
+    if (localStorage.getItem('lsa-studio-auth')) this.osInit(); // silently resume Lintel OS link
     this._key = (e) => {
       const t = e.target;
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
@@ -719,8 +883,22 @@ class Component extends DCLogic {
   addGallery() {
     this.setState(s => {
       const gals = [...(s.data.galleries || []), { name: 'Gallery', layout: 'duo', imgs: [null, null, null] }];
-      return { data: { ...s.data, galleries: gals }, active: 6 + gals.length - 1, open: 'content', saved: true };
+      const mid = this.BASE_SLIDES.slice(3, 7).filter(x => !(s.data.removed || []).includes(x.key));
+      return { data: { ...s.data, galleries: gals }, active: 3 + mid.length + gals.length - 1, open: 'content', saved: true };
     });
+  }
+  delSlide(key) {
+    if (!window.confirm('Remove this slide from the presentation?')) return;
+    this.setState(s => ({
+      data: { ...s.data, removed: [...(s.data.removed || []), key] },
+      active: Math.max(0, Math.min(s.active, this.SLIDES.length - 2)),
+      saved: true
+    }));
+    this.showToast('Slide removed — use “Restore slides” to bring it back');
+  }
+  restoreSlides() {
+    this.setState(s => ({ data: { ...s.data, removed: [] }, saved: true }));
+    this.showToast('All slides restored');
   }
   setGal(gi, patch) {
     this.setState(s => {
@@ -742,6 +920,126 @@ class Component extends DCLogic {
       t.src = src; t.onload = res; t.onerror = () => rej(new Error('Failed to load ' + src));
       document.head.appendChild(t);
     });
+  }
+
+  /* ── Pitch Assist: curated sales guidance per slide type ── */
+  PITCH_GUIDE = {
+    cover: { hook: 'Open with their name, not yours — “this is what your home wants to become.”', points: ['Set the agenda: vision → spaces → materials → our promise', 'Mention the theme was chosen for THEIR brief, not from a catalogue', 'Confidence, warmth, no rush — this slide buys you attention'], objection: '“We are still comparing designers” → welcome it: “Good — compare warranties and material brands, not just price.”', ask: 'What made you decide to start this project now?' },
+    vision: { hook: 'Sell the outcome, not the scope of work.', points: ['Read the vision aloud, slowly — let it land', 'Tie one phrase directly to something they said in the brief', 'Keywords are their lifestyle, mirrored back'], objection: '“This feels abstract” → “Every word here becomes a material decision — let me show you.” (advance to moodboard)', ask: 'Which of these words feels most like your family?' },
+    mood: { hook: 'Explain the WHY of the palette, not the what.', points: ['Use touch words: honed, smoked, brushed — luxury is tactile', 'Connect each image to a real corner of their home', 'Watch which image their eyes return to — that is a buying signal'], objection: '“Feels dark / not my taste” → never defend; ask what they would keep, then adapt live', ask: 'Which of these images would you want to walk into tonight?' },
+    room: { hook: 'Walk their daily routine through the room — morning to night.', points: ['Name the premium element and WHY it earns its price', 'Feature → benefit: “handleless cabinetry” → “nothing to catch, nothing to clean”', 'Anchor quality: brands + workmanship, not discounts'], objection: '“We can get this cheaper elsewhere” → “Cheaper versions exist. This spec, with a 10-year warranty and these brands, does not.”', ask: 'How do you actually use this room on a weekday?' },
+    gallery: { hook: 'Let the images breathe — silence sells here.', points: ['Give one sentence of context per image, then pause', 'Invite them to react before you explain', 'Relate every image back to THEIR floor plan'], objection: '“Is this your own work?” → be honest about references vs. delivered projects — trust compounds', ask: 'Shall I show you how this translates to your space?' },
+    palette: { hook: 'Materials are where luxury becomes provable.', points: ['Talk durability and ageing: “this patinas, it does not wear out”', 'Connect choices to their life — kids, pets, parents', 'Offer samples at the site visit — touch closes deals'], objection: '“Maintenance worries” → each material has a one-line care answer; give it immediately', ask: 'Any material you have always wanted in your home?' },
+    warranty: { hook: 'Slow down here — this is the risk-reversal moment.', points: ['10-year warranty vs. the market’s one year — say it plainly', 'Annual inspections mean we stay accountable after handover', 'This is why the quote is not the cheapest — it is the safest'], objection: '“Everyone promises this” → “Ask them for it in writing. Ours is in the contract.”', ask: 'What has worried you most about renovation horror stories?' },
+    thanks: { hook: 'Never end without a next step and a date.', points: ['Summarise the three things they loved (from your notes)', 'Propose the concrete next step: site visit / BOQ / deposit', 'Leave the PDF with them — it keeps selling after you leave'], objection: '“We need time to think” → “Of course. Let us fix a call for Thursday — what remains open by then?”', ask: 'Shall we block the site-measurement date right now?' }
+  };
+
+  /* ── Discussion Pad ── */
+  _persistNotes() {
+    try {
+      const { notes, os } = this.state;
+      localStorage.setItem('lsa_studio_pad_v1', JSON.stringify({ notes, sel: os.sel, selLabel: os.selLabel }));
+    } catch (e) { /* storage full/blocked — pad still works in-memory */ }
+  }
+  addNote() {
+    const text = this.state.noteInput.trim();
+    if (!text) return;
+    const slide = this.SLIDES[this.state.active];
+    const n = { ts: Date.now(), slide: slide.label, text, synced: false };
+    this.setState(s => ({ notes: [...s.notes, n], noteInput: '' }), () => {
+      this._persistNotes();
+      this.pushNote(n);
+    });
+  }
+  clearNotes() {
+    if (!window.confirm('Clear all discussion notes?')) return;
+    this.setState({ notes: [] }, () => this._persistNotes());
+  }
+  copyNotes() {
+    const txt = this.state.notes.map(n => {
+      const t = new Date(n.ts);
+      return '[' + t.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) + ' · ' + n.slide + '] ' + n.text;
+    }).join('\n');
+    navigator.clipboard.writeText(txt).then(() => this.showToast('Notes copied to clipboard'));
+  }
+
+  /* ── Lintel OS link (same Supabase project; RLS enforced server-side) ── */
+  OS_URL = 'https://cxgxmqspvpuizvwfbnjq.supabase.co';
+  OS_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4Z3htcXNwdnB1aXp2d2ZibmpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MDEwMDUsImV4cCI6MjA5Njk3NzAwNX0.cPbcB9m-WSAC2e8nOD_vdp2mrAeDaisk4-nET5eo8lE';
+  OS_DOMAIN = 'lintelspace.com';
+  setOs(patch, cb) { this.setState(s => ({ os: { ...s.os, ...patch } }), cb); }
+  async _sb() {
+    if (this._sbClient) return this._sbClient;
+    await this._loadLib('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
+    this._sbClient = window.supabase.createClient(this.OS_URL, this.OS_KEY, { auth: { storageKey: 'lsa-studio-auth' } });
+    return this._sbClient;
+  }
+  async osInit() {
+    try {
+      const sb = await this._sb();
+      const { data } = await sb.auth.getSession();
+      const user = data && data.session && data.session.user;
+      if (user) {
+        this.setOs({ stage: 'in', userId: user.id, userEmail: user.email, err: '' });
+        this.osLoadTargets();
+        this.syncPending();
+      } else {
+        this.setOs({ stage: 'login' });
+      }
+    } catch (e) { this.setOs({ stage: 'login', err: 'Could not reach Lintel OS — check connection.' }); }
+  }
+  async osSignIn() {
+    const { email, pw } = this.state.os;
+    if (!email.endsWith('@' + this.OS_DOMAIN)) return this.setOs({ err: 'Use your @' + this.OS_DOMAIN + ' email.' });
+    if (!pw) return this.setOs({ err: 'Enter your password.' });
+    this.setOs({ busy: true, err: '' });
+    try {
+      const sb = await this._sb();
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+      if (error) return this.setOs({ busy: false, err: error.message });
+      this.setOs({ stage: 'in', busy: false, pw: '', userId: data.user.id, userEmail: data.user.email });
+      this.showToast('Connected to Lintel OS');
+      this.osLoadTargets();
+      this.syncPending();
+    } catch (e) { this.setOs({ busy: false, err: e.message }); }
+  }
+  async osSignOut() {
+    try { const sb = await this._sb(); await sb.auth.signOut(); } catch (e) { /* session already gone */ }
+    this.setOs({ stage: 'login', userId: null, userEmail: '', sel: null, selLabel: '' });
+    this._persistNotes();
+  }
+  async osLoadTargets() {
+    try {
+      const sb = await this._sb();
+      const [{ data: leads }, { data: projs }] = await Promise.all([
+        sb.from('leads').select('id,name').order('updated_at', { ascending: false }).limit(200),
+        sb.from('projects').select('id,code,name,lead_id').order('id', { ascending: false }).limit(200)
+      ]);
+      const targets = [
+        ...(projs || []).filter(p => p.lead_id).map(p => ({ leadId: p.lead_id, label: (p.code ? p.code + ' · ' : '') + (p.name || 'Project'), kind: 'Project' })),
+        ...(leads || []).map(l => ({ leadId: l.id, label: l.name || ('Lead #' + l.id), kind: 'Lead' }))
+      ];
+      this.setOs({ targets });
+    } catch (e) { this.setOs({ err: 'Could not load leads/projects: ' + e.message }); }
+  }
+  async pushNote(n) {
+    const { os } = this.state;
+    if (os.stage !== 'in' || !os.sel) return; // stays queued; syncPending sends it later
+    try {
+      const sb = await this._sb();
+      const { error } = await sb.from('lead_activities').insert({
+        lead_id: os.sel, type: 'Meeting',
+        text: '🎨 Studio · ' + n.slide + ' — ' + n.text,
+        by_user: os.userId
+      });
+      if (error) throw error;
+      this.setState(s => ({ notes: s.notes.map(x => x.ts === n.ts ? { ...x, synced: true } : x) }), () => this._persistNotes());
+    } catch (e) { this.showToast('Note saved locally — sync failed: ' + e.message); }
+  }
+  async syncPending() {
+    const pending = this.state.notes.filter(n => !n.synced);
+    for (const n of pending) await this.pushNote(n);
+    if (pending.length && this.state.os.sel) this.showToast('Synced ' + pending.length + ' note(s) to Lintel OS');
   }
   async exportRealPdf() {
     try {
@@ -859,6 +1157,12 @@ class Component extends DCLogic {
       icon: s.icon,
       label: s.label,
       num: String(i + 1).padStart(2, '0'),
+      deletable: !this.LOCKED_KEYS.includes(s.key),
+      del: (e) => {
+        if (e && e.stopPropagation) e.stopPropagation();
+        if (s.type === 'gallery') { if (window.confirm('Remove this slide?')) this.delGallery(s.gi); }
+        else this.delSlide(s.key);
+      },
       go: () => this.goTo(i),
       itemStyle: {
         display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', borderRadius: '8px',
@@ -1069,6 +1373,42 @@ class Component extends DCLogic {
       }
     }));
 
+    // ── Pitch Assist model (current slide) ──
+    const pg = this.PITCH_GUIDE[type] || this.PITCH_GUIDE.cover;
+    const pitch = {
+      hook: pg.hook,
+      points: pg.points.map(t => ({ text: t })),
+      objection: pg.objection,
+      ask: pg.ask,
+      custom: (d.pitchNotes || {})[slide.key] || ''
+    };
+
+    // ── Discussion Pad model ──
+    const noteRows = st.notes.slice().reverse().map(n => ({
+      time: new Date(n.ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+      slide: n.slide,
+      text: n.text,
+      syncIcon: n.synced ? '✓' : '·',
+      syncStyle: { fontSize: '10px', flexShrink: 0, color: n.synced ? '#9AC49A' : 'rgba(247,242,233,.3)' },
+      syncTitle: n.synced ? 'Synced to Lintel OS' : 'Not synced yet'
+    }));
+
+    // ── Lintel OS model ──
+    const os = st.os;
+    const q = (os.filter || '').toLowerCase();
+    const osTargets = (os.targets || [])
+      .filter(t => !q || t.label.toLowerCase().includes(q))
+      .slice(0, 12)
+      .map(t => ({
+        label: t.label, kind: t.kind,
+        pick: () => this.setOs({ sel: t.leadId, selLabel: t.kind + ' · ' + t.label }, () => { this._persistNotes(); this.syncPending(); this.showToast('Notes will log to: ' + t.label); }),
+        style: {
+          display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '7px', cursor: 'pointer',
+          border: os.sel === t.leadId ? '1px solid rgba(212,168,92,.6)' : '1px solid rgba(247,242,233,.07)',
+          background: os.sel === t.leadId ? 'rgba(212,168,92,.1)' : 'rgba(247,242,233,.02)', transition: 'all .15s'
+        }
+      }));
+
     const h = {
       project: (e) => this.setData({ project: e.target.value }),
       client: (e) => this.setData({ client: e.target.value }),
@@ -1092,6 +1432,23 @@ class Component extends DCLogic {
       exportPptx: () => this.showToast('PowerPoint export coming soon — PDF is ready to use'),
       share: () => this.showToast('Share link copied — valid for 7 days'),
       addRoom: () => this.addGallery(),
+      restore: () => this.restoreSlides(),
+      notesToggle: () => this.setState(s => ({ notesOpen: !s.notesOpen }), () => { if (this.state.notesOpen && this.state.os.stage === 'out') this.osInit(); }),
+      noteType: (e) => this.setState({ noteInput: e.target.value }),
+      noteKey: (e) => { if (e.key === 'Enter') this.addNote(); },
+      noteAdd: () => this.addNote(),
+      noteCopy: () => this.copyNotes(),
+      noteClear: () => this.clearNotes(),
+      noteSync: () => this.syncPending(),
+      pitchCustom: (e) => this.setData({ pitchNotes: { ...(d.pitchNotes || {}), [slide.key]: e.target.value } }),
+      pitchToggle: () => this.setState(s => ({ pitchOn: !s.pitchOn })),
+      osEmail: (e) => this.setOs({ email: e.target.value }),
+      osPw: (e) => this.setOs({ pw: e.target.value }),
+      osPwKey: (e) => { if (e.key === 'Enter') this.osSignIn(); },
+      osSignIn: () => this.osSignIn(),
+      osSignOut: () => this.osSignOut(),
+      osFilter: (e) => this.setOs({ filter: e.target.value }),
+      togPitch: () => this.toggle('pitch'),
       togContent: () => this.toggle('content'),
       togImages: () => this.toggle('images'),
       togLayout: () => this.toggle('layout'),
@@ -1141,6 +1498,24 @@ class Component extends DCLogic {
       aiOpen: st.aiOpen, aiBusy: st.aiBusy, aiInput: st.aiInput, aiMsgs, aiQuick, aiActions,
       toast: st.toast,
       savedLabel: 'Saved',
+      hasRemoved: (d.removed || []).length > 0,
+      pitch, openPitch: st.open === 'pitch', chevPitch: chev('pitch'),
+      pitchOn: st.pitchOn,
+      pitchCuesVisible: st.mode === 'present' && st.pitchOn,
+      notesOpen: st.notesOpen, noteInput: st.noteInput, noteRows,
+      noteCount: st.notes.length,
+      pendingCount: st.notes.filter(n => !n.synced).length,
+      hasPending: st.notes.some(n => !n.synced),
+      hasNotes: st.notes.length > 0,
+      os: {
+        loggedOut: os.stage !== 'in', loggedIn: os.stage === 'in',
+        email: os.email, pw: os.pw, err: os.err, busy: os.busy,
+        userEmail: os.userEmail, filter: os.filter,
+        linked: !!os.sel, selLabel: os.selLabel || 'No lead / project selected',
+        selStyle: { fontSize: '11.5px', marginBottom: '7px', color: os.sel ? '#9AC49A' : 'rgba(247,242,233,.45)' },
+        signInLabel: os.busy ? 'Connecting…' : 'Connect'
+      },
+      osTargets,
       h
     };
   }
