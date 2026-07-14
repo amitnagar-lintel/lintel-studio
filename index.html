@@ -37,6 +37,7 @@
     <div style="height:54px;flex-shrink:0;display:flex;align-items:center;gap:16px;padding:0 16px;background:#0D0D27;border-bottom:1px solid rgba(212,168,92,.14);animation:lsaFadeIn .3s ease">
       <div style="display:flex;align-items:center;gap:11px;min-width:0">
         <img src="lsa-logomark.png" alt="Lintel Space Atelier" style="width:38px;height:30px;object-fit:contain;flex-shrink:0">
+        <div onClick="{{ h.presDrawer }}" title="My presentations — open, switch or start a project deck" style="width:30px;height:30px;border-radius:8px;border:1px solid rgba(212,168,92,.4);display:flex;align-items:center;justify-content:center;color:#E9C06B;font-size:13px;cursor:pointer;flex-shrink:0;transition:all .2s" style-hover="background:rgba(212,168,92,.12)">&#9636;</div>
         <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
           <input value="{{ data.project }}" onChange="{{ h.project }}" style="background:transparent;border:none;outline:none;color:#F7F2E9;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;padding:0;width:220px" style-hover="color:#E9C06B">
           <div style="font-size:9px;letter-spacing:2.2px;text-transform:uppercase;color:rgba(247,242,233,.35)">Lintel Space Atelier &middot; Studio</div>
@@ -65,6 +66,7 @@
             <span style="min-width:16px;height:16px;border-radius:999px;background:rgba(212,168,92,.2);border:1px solid rgba(212,168,92,.45);color:#E9C06B;font-size:9px;display:flex;align-items:center;justify-content:center;padding:0 4px">{{ noteCount }}</span>
           </sc-if>
         </div>
+        <div onClick="{{ h.presSaveNow }}" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(154,196,154,.4);color:#9AC49A;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="background:rgba(154,196,154,.1)">Save</div>
         <div onClick="{{ h.share }}" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(247,242,233,.14);color:rgba(247,242,233,.7);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="border-color:rgba(247,242,233,.32);color:#F7F2E9">Share</div>
         <div onClick="{{ h.exportPdf }}" style="padding:7px 16px;border-radius:8px;background:linear-gradient(135deg,#F9D272,#D4A85C 55%,#BF8A44);color:#0D0D27;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="filter:brightness(1.07)">Export</div>
         <div style="width:30px;height:30px;border-radius:50%;background:#23234F;border:1px solid rgba(247,242,233,.14);display:flex;align-items:center;justify-content:center;font-size:11px;color:#E9C06B;cursor:pointer;margin-left:2px" style-hover="border-color:rgba(212,168,92,.5)" title="Settings — Ananya">A</div>
@@ -806,6 +808,43 @@
 
   </div>
 
+  <!-- my presentations drawer -->
+  <sc-if value="{{ presOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ h.presDrawer }}" style="position:fixed;inset:0;z-index:70;background:rgba(7,7,26,.7);backdrop-filter:blur(3px);animation:lsaFadeIn .2s ease"></div>
+    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:71;width:400px;max-height:76vh;display:flex;flex-direction:column;background:#16163A;border:1px solid rgba(212,168,92,.35);border-radius:14px;padding:18px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);animation:lsaFadeUp .25s ease">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:#F7F2E9">My Presentations</div>
+        <div style="font-size:10px;color:rgba(247,242,233,.4)">{{ savedLabel }}</div>
+      </div>
+      <div style="font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(247,242,233,.4);margin-bottom:14px">Each deck saves to its own project in Lintel OS</div>
+      <div onClick="{{ h.presNew }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:1px dashed rgba(212,168,92,.4);border-radius:9px;color:#D4A85C;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;cursor:pointer;margin-bottom:10px;transition:all .2s" style-hover="background:rgba(212,168,92,.08)">+ New presentation</div>
+      <sc-if value="{{ presSignedOut }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:14px;border-radius:9px;background:rgba(212,168,92,.06);border:1px solid rgba(212,168,92,.25);font-size:11.5px;line-height:1.6;color:rgba(247,242,233,.7)">Connect Lintel OS to see saved presentations — open the <b style="color:#E9C06B">&#9998; Notes</b> panel and sign in with Google.</div>
+      </sc-if>
+      <sc-if value="{{ presBusy }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:18px;color:rgba(247,242,233,.4);font-size:11px">Loading…</div>
+      </sc-if>
+      <sc-if value="{{ presEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:18px;color:rgba(247,242,233,.35);font-size:11.5px;line-height:1.6">No saved presentations yet.<br>Build a deck and hit <b style="color:#9AC49A">Save</b>.</div>
+      </sc-if>
+      <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:7px">
+        <sc-for list="{{ presRows }}" as="r" hint-placeholder-count="3">
+          <div onClick="{{ r.load }}" style="display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:9px;border:1px solid rgba(247,242,233,.09);background:rgba(247,242,233,.03);cursor:pointer;transition:all .18s" style-hover="border-color:rgba(212,168,92,.6);background:rgba(212,168,92,.07)">
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:12.5px;color:#F7F2E9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.title }}</span>
+                <span style="font-size:9px;color:#9AC49A;flex-shrink:0">{{ r.current }}</span>
+              </div>
+              <div style="font-size:10px;color:rgba(247,242,233,.4);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.client }} &middot; {{ r.when }}</div>
+            </div>
+            <span onClick="{{ r.del }}" title="Delete presentation" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(224,138,138,.5);cursor:pointer;flex-shrink:0;transition:all .15s" style-hover="background:rgba(224,110,110,.15);color:#E08A8A">&#10005;</span>
+          </div>
+        </sc-for>
+      </div>
+      <div onClick="{{ h.presDrawer }}" style="text-align:center;font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(247,242,233,.35);cursor:pointer;padding-top:10px" style-hover="color:#F7F2E9">Close</div>
+    </div>
+  </sc-if>
+
   <!-- export quality picker -->
   <sc-if value="{{ exportOpen }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ h.exportPdf }}" style="position:fixed;inset:0;z-index:70;background:rgba(7,7,26,.7);backdrop-filter:blur(3px);animation:lsaFadeIn .2s ease"></div>
@@ -853,6 +892,10 @@ class Component extends DCLogic {
     notes: [],
     noteGroupClosed: {},
     exportOpen: false,
+    pres: { id: null, savedAt: '' },
+    presOpen: false,
+    presRows: [],
+    presBusy: false,
     pitchOn: false,
     os: { stage: 'out', panelOpen: false, email: '', pw: '', busy: false, err: '', userId: null, userEmail: '', targets: [], filter: '', sel: null, selLabel: '' },
     data: {
@@ -917,11 +960,21 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
+    this._defaultData = JSON.parse(JSON.stringify(this.state.data));
     if ((this.props.defaultMode ?? 'design') === 'present') this.setState({ mode: 'present' });
     try {
       const pad = JSON.parse(localStorage.getItem('lsa_studio_pad_v1') || 'null');
       if (pad) this.setState(s => ({ notes: pad.notes || [], os: { ...s.os, sel: pad.sel || null, selLabel: pad.selLabel || '' } }));
     } catch (e) { /* corrupt pad state — start fresh */ }
+    try {
+      // restore any deck stashed before the Google sign-in redirect
+      const stash = localStorage.getItem('lsa_pending_deck');
+      if (stash && /access_token=/.test(location.hash)) {
+        const d = JSON.parse(stash);
+        this.setState(s => ({ data: { ...s.data, ...d } }));
+      }
+      localStorage.removeItem('lsa_pending_deck');
+    } catch (e) { /* stash unreadable — nothing to restore */ }
     if (/access_token=/.test(location.hash)) {
       // returning from Google sign-in — open the pad and finish the connection
       this.setState(s => ({ notesOpen: true, os: { ...s.os, panelOpen: true } }), () => this.osInit());
@@ -952,9 +1005,11 @@ class Component extends DCLogic {
   }
   setData(patch) {
     this.setState(s => ({ data: { ...s.data, ...patch }, saved: true }));
+    this._scheduleAuto();
   }
   setRoom(key, patch) {
     this.setState(s => ({ data: { ...s.data, rooms: { ...s.data.rooms, [key]: { ...s.data.rooms[key], ...patch } } } }));
+    this._scheduleAuto();
   }
   // Per-image crop/position: x,y = focus point (%), z = zoom (1 = fit)
   setAdj(key, patch) {
@@ -962,6 +1017,7 @@ class Component extends DCLogic {
       const cur = (s.data.imgAdj || {})[key] || { x: 50, y: 50, z: 1 };
       return { data: { ...s.data, imgAdj: { ...(s.data.imgAdj || {}), [key]: { ...cur, ...patch } } }, saved: true };
     });
+    this._scheduleAuto();
   }
   showToast(msg) {
     this.setState({ toast: msg });
@@ -995,6 +1051,7 @@ class Component extends DCLogic {
       const gals = (s.data.galleries || []).map((g, i) => i === gi ? { ...g, ...patch } : g);
       return { data: { ...s.data, galleries: gals }, saved: true };
     });
+    this._scheduleAuto();
   }
   delGallery(gi) {
     this.setState(s => {
@@ -1081,6 +1138,9 @@ class Component extends DCLogic {
   async osGoogle() {
     this.setOs({ busy: true, err: '' });
     try {
+      // the OAuth redirect reloads the page — stash the deck so work isn't lost
+      try { localStorage.setItem('lsa_pending_deck', JSON.stringify(this.state.data)); }
+      catch (e) { /* deck too large for storage — text fields still safe via defaults */ }
       const sb = await this._sb();
       const { error } = await sb.auth.signInWithOAuth({
         provider: 'google',
@@ -1157,6 +1217,138 @@ class Component extends DCLogic {
     const pending = this.state.notes.filter(n => !n.synced);
     for (const n of pending) await this.pushNote(n);
     if (pending.length && this.state.os.sel) this.showToast('Synced ' + pending.length + ' note(s) to Lintel OS');
+  }
+
+  /* ── Project-wise presentations: saved to Lintel OS (studio_presentations + studio-media) ── */
+  _imgPathList(d) {
+    const out = [['coverImg']];
+    (d.moodImgs || []).forEach((_, i) => out.push(['moodImgs', i]));
+    Object.keys(d.rooms || {}).forEach(k => { out.push(['rooms', k, 'hero']); out.push(['rooms', k, 'detail']); });
+    (d.galleries || []).forEach((g, i) => (g.imgs || []).forEach((_, j) => out.push(['galleries', i, 'imgs', j])));
+    return out;
+  }
+  _getP(o, p) { return p.reduce((a, k) => (a == null ? a : a[k]), o); }
+  _setP(o, p, v) { let t = o; for (let i = 0; i < p.length - 1; i++) t = t[p[i]]; t[p[p.length - 1]] = v; }
+
+  _scheduleAuto() {
+    if (!this.state.pres.id || this.state.os.stage !== 'in') return;
+    clearTimeout(this._auto);
+    this._auto = setTimeout(() => this.presSave(true), 20000);
+  }
+
+  async presSave(silent) {
+    const { os } = this.state;
+    if (os.stage !== 'in') {
+      this.setState(s => ({ notesOpen: true, os: { ...s.os, panelOpen: true } }), () => { if (this.state.os.stage === 'out') this.osInit(); });
+      return this.showToast('Connect Lintel OS first — then presentations save per project');
+    }
+    if (this._saving) return;
+    this._saving = true;
+    try {
+      const sb = await this._sb();
+      const id = this.state.pres.id || (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2));
+      if (!silent) this.showToast('Saving presentation…');
+      const doc = JSON.parse(JSON.stringify(this.state.data));
+      this._sbPaths = this._sbPaths || {};
+      for (const p of this._imgPathList(doc)) {
+        const key = p.join('.');
+        const val = this._getP(doc, p);
+        if (!val || typeof val !== 'string') continue;
+        if (val.startsWith('data:')) {
+          const sig = val.length + ':' + val.slice(60, 100);
+          let rec = this._sbPaths[key];
+          if (!rec || rec.sig !== sig) {
+            const blob = await (await fetch(val)).blob();
+            const spath = id + '/' + key.replace(/[^\w-]/g, '_');
+            const { error } = await sb.storage.from('studio-media').upload(spath, blob, { upsert: true, contentType: blob.type || 'image/jpeg' });
+            if (error) throw error;
+            rec = this._sbPaths[key] = { path: spath, sig };
+          }
+          this._setP(doc, p, 'sbmedia:' + rec.path);
+        } else if (val.startsWith('http')) {
+          const rec = this._sbPaths[key];
+          this._setP(doc, p, rec ? 'sbmedia:' + rec.path : null);
+        }
+      }
+      const { error } = await sb.from('studio_presentations').upsert({
+        id, title: doc.project || 'Untitled', client: doc.client || '',
+        lead_id: os.sel || null, data: doc, created_by: os.userId,
+        updated_at: new Date().toISOString()
+      });
+      if (error) throw error;
+      const t = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      this.setState(s => ({ pres: { id, savedAt: t } }));
+      try { localStorage.setItem('lsa_last_pres', id); } catch (e) { /* non-fatal */ }
+      if (!silent) this.showToast('Saved to Lintel OS ✓');
+    } catch (e) { this.showToast('Save failed: ' + e.message); }
+    this._saving = false;
+  }
+
+  async presDrawer() {
+    const open = !this.state.presOpen;
+    this.setState({ presOpen: open });
+    if (!open) return;
+    if (this.state.os.stage !== 'in') { if (this.state.os.stage === 'out') this.osInit(); return; }
+    this.setState({ presBusy: true });
+    try {
+      const sb = await this._sb();
+      const { data, error } = await sb.from('studio_presentations')
+        .select('id,title,client,updated_at').order('updated_at', { ascending: false }).limit(50);
+      if (error) throw error;
+      this.setState({ presRows: data || [], presBusy: false });
+    } catch (e) { this.setState({ presBusy: false }); this.showToast('Could not load presentations: ' + e.message); }
+  }
+
+  async presLoad(id) {
+    try {
+      this.showToast('Opening presentation…');
+      const sb = await this._sb();
+      const { data: row, error } = await sb.from('studio_presentations').select('*').eq('id', id).single();
+      if (error) throw error;
+      const doc = row.data || {};
+      const toSign = [];
+      this._imgPathList(doc).forEach(p => {
+        const v = this._getP(doc, p);
+        if (typeof v === 'string' && v.startsWith('sbmedia:')) toSign.push({ p, path: v.slice(8) });
+      });
+      this._sbPaths = {};
+      if (toSign.length) {
+        const { data: signed, error: se } = await sb.storage.from('studio-media').createSignedUrls(toSign.map(t => t.path), 60 * 60 * 24 * 6);
+        if (se) throw se;
+        signed.forEach((s, i) => {
+          this._setP(doc, toSign[i].p, s.signedUrl || null);
+          this._sbPaths[toSign[i].p.join('.')] = { path: toSign[i].path, sig: null };
+        });
+      }
+      this.setState(s => ({
+        data: { ...s.data, ...doc },
+        pres: { id: row.id, savedAt: '' },
+        os: row.lead_id ? { ...s.os, sel: row.lead_id } : s.os,
+        active: 0, presOpen: false, saved: true
+      }));
+      try { localStorage.setItem('lsa_last_pres', row.id); } catch (e) { /* non-fatal */ }
+      this.showToast('“' + (row.title || 'Untitled') + '” opened');
+    } catch (e) { this.showToast('Load failed: ' + e.message); }
+  }
+
+  presNew() {
+    clearTimeout(this._auto);
+    this._sbPaths = {};
+    this.setState({ data: JSON.parse(JSON.stringify(this._defaultData)), pres: { id: null, savedAt: '' }, active: 0, presOpen: false });
+    this.showToast('New presentation — remember to Save');
+  }
+
+  async presDelete(id, title) {
+    if (!window.confirm('Delete “' + (title || 'Untitled') + '” for everyone? This cannot be undone.')) return;
+    try {
+      const sb = await this._sb();
+      const { error } = await sb.from('studio_presentations').delete().eq('id', id);
+      if (error) throw error;
+      const { data: files } = await sb.storage.from('studio-media').list(id);
+      if (files && files.length) await sb.storage.from('studio-media').remove(files.map(f => id + '/' + f.name));
+      this.setState(s => ({ presRows: s.presRows.filter(r => r.id !== id), pres: s.pres.id === id ? { id: null, savedAt: '' } : s.pres }));
+      this.showToast('Presentation deleted');
+    } catch (e) { this.showToast('Delete failed: ' + e.message); }
   }
   async exportRealPdf(targetW = 3840, qLabel = '4K') {
     try {
@@ -1608,6 +1800,9 @@ class Component extends DCLogic {
       aiMood: () => this.runAi('Generate Moodboard Description'),
       aiRoomDesc: () => this.runAi('Rewrite in Luxury Tone'),
       exportPdf: () => this.setState(s => ({ exportOpen: !s.exportOpen })),
+      presDrawer: () => this.presDrawer(),
+      presSaveNow: () => this.presSave(false),
+      presNew: () => this.presNew(),
       exportPptx: () => this.showToast('PowerPoint export coming soon — PDF is ready to use'),
       share: () => this.showToast('Share link copied — valid for 7 days'),
       addRoom: () => this.addGallery(),
@@ -1687,7 +1882,19 @@ class Component extends DCLogic {
       ].map(w => w),
       aiOpen: st.aiOpen, aiBusy: st.aiBusy, aiInput: st.aiInput, aiMsgs, aiQuick, aiActions,
       toast: st.toast,
-      savedLabel: 'Saved',
+      savedLabel: this._saving ? 'Saving…' : (st.pres.savedAt ? 'Saved ' + st.pres.savedAt : (st.pres.id ? 'Saved' : 'Not saved')),
+      presOpen: st.presOpen,
+      presBusy: st.presBusy,
+      presSignedOut: st.os.stage !== 'in',
+      presEmpty: st.os.stage === 'in' && !st.presBusy && (st.presRows || []).length === 0,
+      presRows: (st.presRows || []).map(r => ({
+        title: r.title || 'Untitled',
+        client: r.client || '—',
+        when: new Date(r.updated_at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+        current: r.id === st.pres.id ? '● open' : '',
+        load: () => this.presLoad(r.id),
+        del: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.presDelete(r.id, r.title); }
+      })),
       hasRemoved: (d.removed || []).length > 0,
       pitch, openPitch: st.open === 'pitch', chevPitch: chev('pitch'),
       pitchOn: st.pitchOn,
