@@ -42,6 +42,11 @@
           <input value="{{ data.project }}" onChange="{{ h.project }}" style="background:transparent;border:none;outline:none;color:#F7F2E9;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;padding:0;width:220px" style-hover="color:#E9C06B">
           <div style="font-size:9px;letter-spacing:2.2px;text-transform:uppercase;color:rgba(247,242,233,.35)">Lintel Space Atelier &middot; Studio</div>
         </div>
+        <div onClick="{{ h.linkOpen }}" title="Which Lintel OS project this deck saves to — click to set or change" style="{{ linkPillStyle }}" style-hover="filter:brightness(1.15)">
+          <span style="{{ linkDotStyle }}"></span>
+          <span style="font-size:10.5px;color:#F7F2E9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ linkedLabel }}</span>
+          <span style="font-size:9px;color:rgba(247,242,233,.5);flex-shrink:0">&#9662;</span>
+        </div>
       </div>
 
       <div style="flex:1"></div>
@@ -808,6 +813,25 @@
 
   </div>
 
+  <!-- project link picker -->
+  <sc-if value="{{ linkOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ h.linkClose }}" style="position:fixed;inset:0;z-index:72;background:rgba(7,7,26,.7);backdrop-filter:blur(3px);animation:lsaFadeIn .2s ease"></div>
+    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:73;width:400px;max-height:74vh;display:flex;flex-direction:column;background:#16163A;border:1px solid rgba(212,168,92,.35);border-radius:14px;padding:18px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);animation:lsaFadeUp .25s ease">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:#F7F2E9;margin-bottom:4px">Which project is this for?</div>
+      <div style="font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(247,242,233,.4);margin-bottom:13px">This deck &amp; its notes save to the chosen Lintel OS project</div>
+      <input value="{{ linkFilter }}" onChange="{{ h.linkFilterIn }}" placeholder="Search project or lead by name…" style="width:100%;box-sizing:border-box;background:rgba(247,242,233,.05);border:1px solid rgba(247,242,233,.12);border-radius:7px;color:#F7F2E9;font-size:12.5px;padding:9px 12px;outline:none;font-family:'Jost',sans-serif;margin-bottom:11px" style-focus="border-color:rgba(212,168,92,.6)">
+      <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px">
+        <sc-for list="{{ linkTargets }}" as="t" hint-placeholder-count="4">
+          <div onClick="{{ t.pick }}" style="{{ t.style }}" style-hover="border-color:rgba(212,168,92,.55)">
+            <span style="font-size:8.5px;letter-spacing:1px;text-transform:uppercase;color:#D4A85C;flex-shrink:0;width:46px">{{ t.kind }}</span>
+            <span style="flex:1;font-size:12px;color:rgba(247,242,233,.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div onClick="{{ h.linkClose }}" style="text-align:center;font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(247,242,233,.35);cursor:pointer;padding-top:10px" style-hover="color:#F7F2E9">Cancel</div>
+    </div>
+  </sc-if>
+
   <!-- my presentations drawer -->
   <sc-if value="{{ presOpen }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ h.presDrawer }}" style="position:fixed;inset:0;z-index:70;background:rgba(7,7,26,.7);backdrop-filter:blur(3px);animation:lsaFadeIn .2s ease"></div>
@@ -896,6 +920,8 @@ class Component extends DCLogic {
     presOpen: false,
     presRows: [],
     presBusy: false,
+    linkOpen: false,
+    linkForNew: false,
     pitchOn: false,
     os: { stage: 'out', panelOpen: false, email: '', pw: '', busy: false, err: '', userId: null, userEmail: '', targets: [], filter: '', sel: null, selLabel: '' },
     data: {
@@ -1185,6 +1211,8 @@ class Component extends DCLogic {
         ...(leads || []).map(l => ({ leadId: l.id, label: l.name || ('Lead #' + l.id), kind: 'Lead' }))
       ];
       this.setOs({ targets });
+      // If the user hit "New" while signed out, resume the project picker now that we have targets
+      if (this.state.linkForNew && !this.state.linkOpen) this.setState({ linkOpen: true });
       // Auto-match the presentation's client name to a lead/project (manual override always available)
       if (!this.state.os.sel && targets.length) {
         const client = (this.state.data.client || '').toLowerCase().replace(/^the\s+/, '').replace(/\s+(residence|home|villa|house|apartment|flat)$/, '').trim();
@@ -1335,7 +1363,27 @@ class Component extends DCLogic {
     clearTimeout(this._auto);
     this._sbPaths = {};
     this.setState({ data: JSON.parse(JSON.stringify(this._defaultData)), pres: { id: null, savedAt: '' }, active: 0, presOpen: false });
-    this.showToast('New presentation — remember to Save');
+    this.linkPicker(true); // ask which project this deck is for
+  }
+
+  // Project picker — the single place a deck's Lintel OS project is chosen/changed
+  linkPicker(forNew) {
+    if (this.state.os.stage !== 'in') {
+      this.setState(s => ({ notesOpen: true, os: { ...s.os, panelOpen: true }, linkForNew: !!forNew }));
+      if (this.state.os.stage === 'out') this.osInit();
+      return this.showToast('Connect Lintel OS first, then choose the project');
+    }
+    this.setState(s => ({ linkOpen: true, linkForNew: !!forNew, presOpen: false, os: { ...s.os, filter: '' } }));
+    if (!this.state.os.targets.length) this.osLoadTargets();
+  }
+  chooseProject(leadId, kind, label) {
+    this.setOs({ sel: leadId, selLabel: kind + ' · ' + label }, () => {
+      this._persistNotes();
+      this.setState({ linkOpen: false });
+      this.showToast('Linked to ' + label);
+      this.syncPending();
+      if (this.state.pres.id) this.presSave(true); // re-point an already-saved deck
+    });
   }
 
   async presDelete(id, title) {
@@ -1803,6 +1851,9 @@ class Component extends DCLogic {
       presDrawer: () => this.presDrawer(),
       presSaveNow: () => this.presSave(false),
       presNew: () => this.presNew(),
+      linkOpen: () => this.linkPicker(false),
+      linkClose: () => this.setState({ linkOpen: false }),
+      linkFilterIn: (e) => this.setOs({ filter: e.target.value }),
       exportPptx: () => this.showToast('PowerPoint export coming soon — PDF is ready to use'),
       share: () => this.showToast('Share link copied — valid for 7 days'),
       addRoom: () => this.addGallery(),
@@ -1895,6 +1946,29 @@ class Component extends DCLogic {
         load: () => this.presLoad(r.id),
         del: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.presDelete(r.id, r.title); }
       })),
+      linkOpen: st.linkOpen,
+      linkForNew: st.linkForNew,
+      linkedLabel: os.sel ? (os.selLabel || 'Linked project') : 'Link a project',
+      linkPillStyle: {
+        display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 11px', borderRadius: '999px', cursor: 'pointer',
+        transition: 'all .2s', maxWidth: '220px',
+        border: os.sel ? '1px solid rgba(154,196,154,.45)' : '1px solid rgba(212,168,92,.5)',
+        background: os.sel ? 'rgba(154,196,154,.08)' : 'rgba(212,168,92,.1)'
+      },
+      linkDotStyle: { width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0, background: os.sel ? '#9AC49A' : '#E9C06B' },
+      linkTargets: (os.targets || [])
+        .filter(t => { const q = (os.filter || '').toLowerCase(); return !q || t.label.toLowerCase().includes(q); })
+        .slice(0, 60)
+        .map(t => ({
+          label: t.label, kind: t.kind,
+          pick: () => this.chooseProject(t.leadId, t.kind, t.label),
+          style: {
+            display: 'flex', alignItems: 'center', gap: '9px', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer',
+            border: os.sel === t.leadId ? '1px solid rgba(212,168,92,.6)' : '1px solid rgba(247,242,233,.08)',
+            background: os.sel === t.leadId ? 'rgba(212,168,92,.1)' : 'rgba(247,242,233,.03)', transition: 'all .15s'
+          }
+        })),
+      linkFilter: os.filter,
       hasRemoved: (d.removed || []).length > 0,
       pitch, openPitch: st.open === 'pitch', chevPitch: chev('pitch'),
       pitchOn: st.pitchOn,
