@@ -1001,11 +1001,22 @@ class Component extends DCLogic {
       }
       localStorage.removeItem('lsa_pending_deck');
     } catch (e) { /* stash unreadable — nothing to restore */ }
+    // Deep-links from Lintel OS: ?open=<presId> opens a deck, ?lead=<id> starts one pre-linked.
+    // Stash them so they survive the Google OAuth redirect (which strips the query string).
+    try {
+      const params = new URLSearchParams(location.search);
+      if (params.get('open')) localStorage.setItem('lsa_open_pres', params.get('open'));
+      if (params.get('lead')) localStorage.setItem('lsa_open_lead', params.get('lead'));
+      if ((params.get('open') || params.get('lead')) && history.replaceState) history.replaceState(null, '', location.pathname);
+    } catch (e) { /* no params */ }
+    const hasDeepLink = localStorage.getItem('lsa_open_pres') || localStorage.getItem('lsa_open_lead');
+
     if (/access_token=/.test(location.hash)) {
       // returning from Google sign-in — open the pad and finish the connection
       this.setState(s => ({ notesOpen: true, os: { ...s.os, panelOpen: true } }), () => this.osInit());
-    } else if (localStorage.getItem('lsa-studio-auth')) {
-      this.osInit(); // silently resume Lintel OS link
+    } else if (localStorage.getItem('lsa-studio-auth') || hasDeepLink) {
+      if (hasDeepLink) this.setState(s => ({ notesOpen: true, os: { ...s.os, panelOpen: true } }));
+      this.osInit(); // resume session, or show sign-in so the deep-link can complete
     }
     this._key = (e) => {
       const t = e.target;
@@ -1211,6 +1222,7 @@ class Component extends DCLogic {
         ...(leads || []).map(l => ({ leadId: l.id, label: l.name || ('Lead #' + l.id), kind: 'Lead' }))
       ];
       this.setOs({ targets });
+      if (this._consumeDeepLink()) return; // opened a specific deck / pre-linked a lead from Lintel OS
       // If the user hit "New" while signed out, resume the project picker now that we have targets
       if (this.state.linkForNew && !this.state.linkOpen) this.setState({ linkOpen: true });
       // Auto-match the presentation's client name to a lead/project (manual override always available)
@@ -1348,15 +1360,38 @@ class Component extends DCLogic {
           this._sbPaths[toSign[i].p.join('.')] = { path: toSign[i].path, sig: null };
         });
       }
+      const tgt = (this.state.os.targets || []).find(x => String(x.leadId) === String(row.lead_id));
       this.setState(s => ({
         data: { ...s.data, ...doc },
         pres: { id: row.id, savedAt: '' },
-        os: row.lead_id ? { ...s.os, sel: row.lead_id } : s.os,
-        active: 0, presOpen: false, saved: true
+        os: row.lead_id ? { ...s.os, sel: row.lead_id, selLabel: tgt ? tgt.kind + ' · ' + tgt.label : s.os.selLabel } : s.os,
+        active: 0, presOpen: false, notesOpen: false, saved: true
       }));
       try { localStorage.setItem('lsa_last_pres', row.id); } catch (e) { /* non-fatal */ }
       this.showToast('“' + (row.title || 'Untitled') + '” opened');
     } catch (e) { this.showToast('Load failed: ' + e.message); }
+  }
+
+  // Handle a deep-link stashed from Lintel OS once signed in + targets loaded
+  _consumeDeepLink() {
+    try {
+      const openId = localStorage.getItem('lsa_open_pres');
+      const leadId = localStorage.getItem('lsa_open_lead');
+      if (openId) {
+        localStorage.removeItem('lsa_open_pres'); localStorage.removeItem('lsa_open_lead');
+        this.presLoad(openId);
+        return true;
+      }
+      if (leadId) {
+        localStorage.removeItem('lsa_open_lead');
+        const t = (this.state.os.targets || []).find(x => String(x.leadId) === String(leadId));
+        if (t) { this.setOs({ sel: t.leadId, selLabel: t.kind + ' · ' + t.label }); this.showToast('New presentation for: ' + t.label); }
+        else this.setOs({ sel: isNaN(+leadId) ? leadId : +leadId });
+        this.setState({ notesOpen: false });
+        return true;
+      }
+    } catch (e) { /* ignore */ }
+    return false;
   }
 
   presNew() {
