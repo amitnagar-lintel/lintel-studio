@@ -61,7 +61,12 @@
 
       <!-- grouped actions -->
       <div style="display:flex;align-items:center;gap:8px">
-        <div style="display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(154,196,154,.75);margin-right:2px"><span style="font-size:12px">&#10003;</span>{{ savedLabel }}</div>
+        <sc-if value="{{ hasPeers }}" hint-placeholder-val="{{ false }}">
+          <div title="Others have this presentation open — last save wins, so coordinate before overwriting" style="display:flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;border:1px solid rgba(224,179,106,.45);background:rgba(224,179,106,.1);color:#E0B36A;font-size:10px;letter-spacing:.6px;margin-right:2px">
+            <span style="width:6px;height:6px;border-radius:50%;background:#E0B36A;box-shadow:0 0 0 3px rgba(224,179,106,.2)"></span>{{ peersLabel }}
+          </div>
+        </sc-if>
+        <div style="{{ savedStyle }}">{{ savedLabel }}</div>
         <div onClick="{{ h.aiToggle }}" style="display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:8px;border:1px solid rgba(212,168,92,.4);color:#E9C06B;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all .2s" style-hover="background:rgba(212,168,92,.1);box-shadow:0 8px 28px -8px rgba(191,138,68,.45)">
           <span style="font-size:13px">&#10022;</span> Assistant
         </div>
@@ -923,8 +928,10 @@ class Component extends DCLogic {
     presBusy: false,
     linkOpen: false,
     linkForNew: false,
+    presPeers: [],
+    presConflict: false,
     pitchOn: false,
-    os: { stage: 'out', panelOpen: false, email: '', pw: '', busy: false, err: '', userId: null, userEmail: '', targets: [], filter: '', sel: null, selLabel: '' },
+    os: { stage: 'out', panelOpen: false, email: '', pw: '', busy: false, err: '', userId: null, userEmail: '', userName: '', targets: [], filter: '', sel: null, selLabel: '' },
     data: {
       client: 'The Mehta Residence',
       project: 'Complete Home Interior',
@@ -968,12 +975,12 @@ class Component extends DCLogic {
       { key: 'gal' + i, icon: '🖼', label: g.name || ('Gallery ' + (i + 1)), type: 'gallery', gi: i }
     ));
     const removed = d.removed || [];
-    // First 3 (cover, vision, mood) and last 2 (warranty, thanks) are permanent;
-    // everything between can be deleted by the designer.
-    const mid = this.BASE_SLIDES.slice(3, 7).filter(s => !removed.includes(s.key));
-    return [...this.BASE_SLIDES.slice(0, 3), ...mid, ...gals, ...this.BASE_SLIDES.slice(7)];
+    // Only Welcome (cover), Vision and Thank You are permanent.
+    // Everything between (moodboard, rooms, palette, warranty, galleries) is editable & deletable.
+    const mid = this.BASE_SLIDES.slice(2, 8).filter(s => !removed.includes(s.key));
+    return [...this.BASE_SLIDES.slice(0, 2), ...mid, ...gals, ...this.BASE_SLIDES.slice(8)];
   }
-  LOCKED_KEYS = ['cover', 'vision', 'mood', 'warranty', 'thanks'];
+  LOCKED_KEYS = ['cover', 'vision', 'thanks'];
 
   DEFAULT_OPEN = { cover: 'content', vision: 'content', mood: 'layout', room: 'images', palette: 'colours', warranty: 'content', thanks: 'content', gallery: 'content' };
 
@@ -1067,8 +1074,8 @@ class Component extends DCLogic {
   addGallery() {
     this.setState(s => {
       const gals = [...(s.data.galleries || []), { name: 'Gallery', layout: 'duo', imgs: [null, null, null] }];
-      const mid = this.BASE_SLIDES.slice(3, 7).filter(x => !(s.data.removed || []).includes(x.key));
-      return { data: { ...s.data, galleries: gals }, active: 3 + mid.length + gals.length - 1, open: 'content', saved: true };
+      const mid = this.BASE_SLIDES.slice(2, 8).filter(x => !(s.data.removed || []).includes(x.key));
+      return { data: { ...s.data, galleries: gals }, active: 2 + mid.length + gals.length - 1, open: 'content', saved: true };
     });
   }
   delSlide(key) {
@@ -1214,6 +1221,12 @@ class Component extends DCLogic {
   async osLoadTargets() {
     try {
       const sb = await this._sb();
+      // fetch this user's display name for the presence badge
+      if (this.state.os.userId && !this.state.os.userName) {
+        sb.from('profiles').select('full_name').eq('id', this.state.os.userId).single()
+          .then(({ data }) => { if (data && data.full_name) this.setOs({ userName: data.full_name }); })
+          .catch(() => {});
+      }
       const [{ data: leads }, { data: projs }] = await Promise.all([
         sb.from('leads').select('id,name').order('updated_at', { ascending: false }).limit(200),
         sb.from('projects').select('id,code,name,lead_id').order('id', { ascending: false }).limit(200)
@@ -1287,7 +1300,24 @@ class Component extends DCLogic {
     this._saving = true;
     try {
       const sb = await this._sb();
+      const isNew = !this.state.pres.id;
       const id = this.state.pres.id || (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2));
+
+      // ── Conflict guard: has a teammate saved since we opened this deck? ──
+      if (!isNew) {
+        const { data: cur } = await sb.from('studio_presentations').select('updated_at,updated_by').eq('id', id).single();
+        if (cur && this._loadedAt && new Date(cur.updated_at) > new Date(this._loadedAt) && String(cur.updated_by || '') !== String(os.userId)) {
+          const whenStr = new Date(cur.updated_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+          if (silent) {
+            this.setState({ presConflict: true });
+            this.showToast('A teammate saved this deck at ' + whenStr + ' — autosave paused. Click Save to resolve.');
+            this._saving = false; return;
+          }
+          const ok = window.confirm('A teammate updated this presentation at ' + whenStr + ', after you opened it.\n\nOK  = overwrite with YOUR version (their changes are lost)\nCancel = keep theirs (reload the deck to see it)');
+          if (!ok) { this._saving = false; this.setState({ presConflict: true }); return; }
+        }
+      }
+
       if (!silent) this.showToast('Saving presentation…');
       const doc = JSON.parse(JSON.stringify(this.state.data));
       this._sbPaths = this._sbPaths || {};
@@ -1311,14 +1341,18 @@ class Component extends DCLogic {
           this._setP(doc, p, rec ? 'sbmedia:' + rec.path : null);
         }
       }
-      const { error } = await sb.from('studio_presentations').upsert({
+      const nowIso = new Date().toISOString();
+      const payload = {
         id, title: doc.project || 'Untitled', client: doc.client || '',
-        lead_id: os.sel || null, data: doc, created_by: os.userId,
-        updated_at: new Date().toISOString()
-      });
+        lead_id: os.sel || null, data: doc, updated_by: os.userId, updated_at: nowIso
+      };
+      if (isNew) payload.created_by = os.userId; // don't overwrite the original creator on edits
+      const { error } = await sb.from('studio_presentations').upsert(payload);
       if (error) throw error;
+      this._loadedAt = nowIso; // our save is the new baseline for conflict detection
       const t = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-      this.setState(s => ({ pres: { id, savedAt: t } }));
+      this.setState(s => ({ pres: { id, savedAt: t }, presConflict: false }));
+      if (isNew) this._joinPresence(id); // others now see this deck is open
       try { localStorage.setItem('lsa_last_pres', id); } catch (e) { /* non-fatal */ }
       if (!silent) this.showToast('Saved to Lintel OS ✓');
     } catch (e) { this.showToast('Save failed: ' + e.message); }
@@ -1362,15 +1396,41 @@ class Component extends DCLogic {
         });
       }
       const tgt = (this.state.os.targets || []).find(x => String(x.leadId) === String(row.lead_id));
+      this._loadedAt = row.updated_at; // conflict baseline: the version we opened
       this.setState(s => ({
         data: { ...s.data, ...doc },
         pres: { id: row.id, savedAt: '' },
         os: row.lead_id ? { ...s.os, sel: row.lead_id, selLabel: tgt ? tgt.kind + ' #' + tgt.num + ' · ' + tgt.name : ('Lead #' + row.lead_id) } : s.os,
-        active: 0, presOpen: false, notesOpen: false, saved: true
+        active: 0, presOpen: false, notesOpen: false, saved: true, presConflict: false
       }));
+      this._joinPresence(row.id); // show who else is in this deck
       try { localStorage.setItem('lsa_last_pres', row.id); } catch (e) { /* non-fatal */ }
       this.showToast('“' + (row.title || 'Untitled') + '” opened');
     } catch (e) { this.showToast('Load failed: ' + e.message); }
+  }
+
+  /* ── Presence: who else is editing this deck (Supabase Realtime, no DB writes) ── */
+  async _joinPresence(id) {
+    try {
+      const sb = await this._sb();
+      if (this._chan) { try { sb.removeChannel(this._chan); } catch (e) { /* gone */ } this._chan = null; }
+      this.setState({ presPeers: [] });
+      if (!id) return;
+      const meId = this.state.os.userId || ('anon-' + Math.random().toString(16).slice(2));
+      const meName = this.state.os.userName || (this.state.os.userEmail || '').split('@')[0] || 'A teammate';
+      const chan = sb.channel('deck:' + id, { config: { presence: { key: meId } } });
+      chan.on('presence', { event: 'sync' }, () => {
+        const st = chan.presenceState(); const peers = [];
+        Object.keys(st).forEach(k => (st[k] || []).forEach(p => { if (p.uid !== meId && p.name) peers.push(p.name); }));
+        this.setState({ presPeers: [...new Set(peers)] });
+      });
+      chan.subscribe(async (status) => { if (status === 'SUBSCRIBED') { try { await chan.track({ uid: meId, name: meName, at: Date.now() }); } catch (e) { /* best-effort */ } } });
+      this._chan = chan;
+    } catch (e) { /* presence is best-effort — never blocks editing */ }
+  }
+  _leavePresence() {
+    if (this._chan && this._sbClient) { try { this._sbClient.removeChannel(this._chan); } catch (e) { /* gone */ } this._chan = null; }
+    this.setState({ presPeers: [] });
   }
 
   // Handle a deep-link stashed from Lintel OS once signed in + targets loaded
@@ -1398,7 +1458,9 @@ class Component extends DCLogic {
   presNew() {
     clearTimeout(this._auto);
     this._sbPaths = {};
-    this.setState({ data: JSON.parse(JSON.stringify(this._defaultData)), pres: { id: null, savedAt: '' }, active: 0, presOpen: false });
+    this._loadedAt = null;
+    this._leavePresence();
+    this.setState({ data: JSON.parse(JSON.stringify(this._defaultData)), pres: { id: null, savedAt: '' }, active: 0, presOpen: false, presConflict: false });
     this.linkPicker(true); // ask which project this deck is for
   }
 
@@ -1975,7 +2037,10 @@ class Component extends DCLogic {
       ].map(w => w),
       aiOpen: st.aiOpen, aiBusy: st.aiBusy, aiInput: st.aiInput, aiMsgs, aiQuick, aiActions,
       toast: st.toast,
-      savedLabel: this._saving ? 'Saving…' : (st.pres.savedAt ? 'Saved ' + st.pres.savedAt : (st.pres.id ? 'Saved' : 'Not saved')),
+      savedLabel: st.presConflict ? '⚠ Changed by a teammate' : (this._saving ? 'Saving…' : (st.pres.savedAt ? 'Saved ' + st.pres.savedAt : (st.pres.id ? 'Saved' : 'Not saved'))),
+      savedStyle: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', marginRight: '2px', color: st.presConflict ? '#E0B36A' : 'rgba(154,196,154,.75)' },
+      hasPeers: (st.presPeers || []).length > 0,
+      peersLabel: (st.presPeers || []).length === 1 ? st.presPeers[0] + ' is editing' : (st.presPeers || []).length + ' teammates editing',
       presOpen: st.presOpen,
       presBusy: st.presBusy,
       presSignedOut: st.os.stage !== 'in',
