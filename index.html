@@ -201,7 +201,7 @@
                   <label style="position:relative;flex:1;border-radius:1cqh;overflow:hidden;background:#101033;border:1px dashed rgba(212,168,92,.3);cursor:pointer;display:flex;align-items:center;justify-content:center">
                     <div style="{{ c.bg }}"></div>
                     <sc-if value="{{ c.empty }}" hint-placeholder-val="{{ true }}">
-                      <div style="display:flex;flex-direction:column;align-items:center;gap:.8cqh;color:rgba(212,168,92,.55)">
+                      <div data-ph="1" style="display:flex;flex-direction:column;align-items:center;gap:.8cqh;color:rgba(212,168,92,.55)">
                         <span style="font-size:2.6cqh">&#8613;</span>
                         <span style="font-size:1.2cqh;letter-spacing:.25cqh;text-transform:uppercase">Click to add image</span>
                       </div>
@@ -244,7 +244,7 @@
                       <div style="{{ c.bg }}"></div>
                     </sc-if>
                     <sc-if value="{{ c.empty }}" hint-placeholder-val="{{ true }}">
-                      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1cqh;color:rgba(212,168,92,.38);background:linear-gradient(150deg,rgba(247,242,233,.05),rgba(247,242,233,.01))">
+                      <div data-ph="1" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1cqh;color:rgba(212,168,92,.38);background:linear-gradient(150deg,rgba(247,242,233,.05),rgba(247,242,233,.01))">
                         <div style="font-size:2.6cqh">&#10022;</div>
                         <div style="font-size:1.1cqh;letter-spacing:.25cqh;text-transform:uppercase">{{ c.ph }}</div>
                       </div>
@@ -264,7 +264,7 @@
                   <div style="{{ room.heroBg }}"></div>
                 </sc-if>
                 <sc-if value="{{ room.noHero }}" hint-placeholder-val="{{ true }}">
-                  <div style="position:absolute;inset:0;background:linear-gradient(150deg,#23234F,#16163A 60%,#0D0D27);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4cqh;color:rgba(212,168,92,.4)">
+                  <div data-ph="1" style="position:absolute;inset:0;background:linear-gradient(150deg,#23234F,#16163A 60%,#0D0D27);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4cqh;color:rgba(212,168,92,.4)">
                     <div style="font-size:3.4cqh">&#10022;</div>
                     <div style="font-size:1.3cqh;letter-spacing:.35cqh;text-transform:uppercase">Hero imagery</div>
                   </div>
@@ -290,7 +290,7 @@
                       <div style="{{ room.detailBg }}"></div>
                     </sc-if>
                     <sc-if value="{{ room.noDetail }}" hint-placeholder-val="{{ true }}">
-                      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:1cqh;color:rgba(212,168,92,.35);font-size:1.1cqh;letter-spacing:.25cqh;text-transform:uppercase">&#10022; Detail</div>
+                      <div data-ph="1" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:1cqh;color:rgba(212,168,92,.35);font-size:1.1cqh;letter-spacing:.25cqh;text-transform:uppercase">&#10022; Detail</div>
                     </sc-if>
                   </div>
                 </div>
@@ -531,22 +531,33 @@
                       <sc-if value="{{ im.adj.has }}" hint-placeholder-val="{{ false }}">
                         <div style="padding:8px 10px;border-radius:8px;background:rgba(247,242,233,.03);border:1px solid rgba(247,242,233,.07);display:flex;flex-direction:column;gap:6px">
                           <div style="display:flex;align-items:center;justify-content:space-between">
-                            <span style="font-size:8.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(247,242,233,.4)">Crop &amp; position — {{ im.label }}</span>
+                            <span style="font-size:8.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(247,242,233,.4)">Image — {{ im.label }}</span>
                             <span onClick="{{ im.adj.reset }}" style="font-size:8.5px;letter-spacing:1px;text-transform:uppercase;color:rgba(247,242,233,.35);cursor:pointer" style-hover="color:#E9C06B">Reset</span>
                           </div>
-                          <div style="display:flex;align-items:center;gap:8px">
-                            <span style="font-size:9px;color:rgba(247,242,233,.4);width:30px">Move ↔</span>
-                            <input type="range" min="0" max="100" value="{{ im.adj.x }}" onChange="{{ im.adj.sx }}" style="flex:1;accent-color:#D4A85C;height:14px">
+                          <div style="display:flex;gap:4px;background:rgba(13,13,39,.5);border-radius:8px;padding:3px">
+                            <div onClick="{{ im.adj.setCover }}" style="{{ im.adj.coverStyle }}">Fill frame</div>
+                            <div onClick="{{ im.adj.setWhole }}" style="{{ im.adj.wholeStyle }}">Whole image</div>
                           </div>
-                          <div style="display:flex;align-items:center;gap:8px">
-                            <span style="font-size:9px;color:rgba(247,242,233,.4);width:30px">Move ↕</span>
-                            <input type="range" min="0" max="100" value="{{ im.adj.y }}" onChange="{{ im.adj.sy }}" style="flex:1;accent-color:#D4A85C;height:14px">
-                          </div>
-                          <div style="display:flex;align-items:center;gap:8px">
-                            <span style="font-size:9px;color:rgba(247,242,233,.4);width:30px">Zoom</span>
-                            <input type="range" min="100" max="250" value="{{ im.adj.z }}" onChange="{{ im.adj.sz }}" style="flex:1;accent-color:#D4A85C;height:14px">
-                            <span style="font-size:9px;color:#E9C06B;width:32px;text-align:right">{{ im.adj.zLabel }}</span>
-                          </div>
+                          <sc-if value="{{ im.adj.isCrop }}" hint-placeholder-val="{{ true }}">
+                            <div style="display:flex;flex-direction:column;gap:6px">
+                              <div style="display:flex;align-items:center;gap:8px">
+                                <span style="font-size:9px;color:rgba(247,242,233,.4);width:30px">Move ↔</span>
+                                <input type="range" min="0" max="100" value="{{ im.adj.x }}" onChange="{{ im.adj.sx }}" style="flex:1;accent-color:#D4A85C;height:14px">
+                              </div>
+                              <div style="display:flex;align-items:center;gap:8px">
+                                <span style="font-size:9px;color:rgba(247,242,233,.4);width:30px">Move ↕</span>
+                                <input type="range" min="0" max="100" value="{{ im.adj.y }}" onChange="{{ im.adj.sy }}" style="flex:1;accent-color:#D4A85C;height:14px">
+                              </div>
+                              <div style="display:flex;align-items:center;gap:8px">
+                                <span style="font-size:9px;color:rgba(247,242,233,.4);width:30px">Zoom</span>
+                                <input type="range" min="100" max="250" value="{{ im.adj.z }}" onChange="{{ im.adj.sz }}" style="flex:1;accent-color:#D4A85C;height:14px">
+                                <span style="font-size:9px;color:#E9C06B;width:32px;text-align:right">{{ im.adj.zLabel }}</span>
+                              </div>
+                            </div>
+                          </sc-if>
+                          <sc-if value="{{ im.adj.isWhole }}" hint-placeholder-val="{{ false }}">
+                            <div style="font-size:9px;color:rgba(247,242,233,.4);line-height:1.5">Whole photo shown, uncropped. Any empty space sits on a navy backdrop.</div>
+                          </sc-if>
                         </div>
                       </sc-if>
                     </div>
@@ -1056,6 +1067,15 @@ class Component extends DCLogic {
     this.setState(s => ({ data: { ...s.data, rooms: { ...s.data.rooms, [key]: { ...s.data.rooms[key], ...patch } } } }));
     this._scheduleAuto();
   }
+  _segStyle(active) {
+    return {
+      flex: 1, textAlign: 'center', padding: '6px 8px', borderRadius: '6px', cursor: 'pointer', fontSize: '10px',
+      letterSpacing: '.4px', transition: 'all .15s',
+      border: active ? '1px solid rgba(212,168,92,.6)' : '1px solid transparent',
+      background: active ? 'rgba(212,168,92,.14)' : 'transparent',
+      color: active ? '#E9C06B' : 'rgba(247,242,233,.5)'
+    };
+  }
   // Per-image crop/position: x,y = focus point (%), z = zoom (1 = fit)
   setAdj(key, patch) {
     this.setState(s => {
@@ -1516,6 +1536,8 @@ class Component extends DCLogic {
       const total = this.SLIDES.length;
       const origActive = this.state.active;
       const origMode = this.state.mode;
+      this.setState({ mode: 'present' }); // hide design-only chrome (layout buttons, remove, labels) from the PDF
+      await new Promise(r => setTimeout(r, 250));
       for (let i = 0; i < total; i++) {
         this.setState({ active: i });
         this.showToast('Rendering slide ' + (i + 1) + ' of ' + total + ' at ' + qLabel + '\u2026');
@@ -1525,17 +1547,8 @@ class Component extends DCLogic {
         // Render at the chosen output resolution (HD/4K/8K), independent of preview size
         const scale = Math.max(1.5, targetW / node.clientWidth);
         const canvas = await window.html2canvas(node, { scale, useCORS: true, backgroundColor: '#0D0D27', logging: false, onclone: (doc) => {
-          doc.querySelectorAll('img').forEach((im) => {
-            const st = im.getAttribute('style') || '';
-            if (st.indexOf('object-fit:cover') === -1 && st.indexOf('object-fit: cover') === -1) return;
-            if (!im.src) return;
-            const dv = doc.createElement('div');
-            dv.setAttribute('style', st.replace(/object-fit:\s*cover;?/g, ''));
-            dv.style.backgroundImage = 'url("' + im.src + '")';
-            dv.style.backgroundSize = 'cover';
-            dv.style.backgroundPosition = 'center';
-            im.replaceWith(dv);
-          });
+          // never print empty-slot prompts (e.g. "Click to add image", "Hero imagery") in a client PDF
+          doc.querySelectorAll('[data-ph]').forEach((el) => { el.style.display = 'none'; });
         } });
         const img = canvas.toDataURL('image/jpeg', targetW >= 7680 ? 0.9 : 0.95);
         const pageH = PAGE_W * canvas.height / canvas.width;
@@ -1551,6 +1564,7 @@ class Component extends DCLogic {
       this.showToast('PDF downloaded \u2014 ' + fname);
     } catch (err) {
       console.error('PDF export failed:', err);
+      try { this.setState({ mode: this.state.mode === 'present' ? 'design' : this.state.mode }); } catch (e) { /* noop */ }
       this.showToast('PDF export failed: ' + err.message);
     }
   }
@@ -1641,26 +1655,45 @@ class Component extends DCLogic {
     const adjOf = (key) => (d.imgAdj || {})[key] || { x: 50, y: 50, z: 1 };
     const bgAdj = (key, src) => {
       const a = adjOf(key);
-      return {
-        position: 'absolute', inset: 0,
+      if (a.fit === 'contain') {
+        // Show the WHOLE image, letterboxed on a navy backdrop — no cropping.
+        return {
+          position: 'absolute', inset: 0,
+          backgroundImage: 'url("' + src + '")',
+          backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat',
+          backgroundColor: '#0D0D27'
+        };
+      }
+      const base = {
+        position: 'absolute',
         backgroundImage: 'url("' + src + '")',
         backgroundSize: 'cover',
-        backgroundPosition: a.x + '% ' + a.y + '%',
-        transform: a.z > 1 ? 'scale(' + a.z + ')' : 'none',
-        transformOrigin: a.x + '% ' + a.y + '%'
+        backgroundPosition: a.x + '% ' + a.y + '%'
       };
+      if (!(a.z > 1)) return { ...base, inset: 0 };
+      // Zoom by enlarging the div (parent clips via overflow) instead of CSS transform —
+      // transforms are rasterised-then-scaled by html2canvas, which blurred the PDF.
+      const p = a.z * 100;
+      return { ...base, left: ((1 - a.z) * a.x) + '%', top: ((1 - a.z) * a.y) + '%', width: p + '%', height: p + '%' };
     };
     const mkAdjCtl = (key, has) => {
       if (!has) return { has: false };
       const a = adjOf(key);
+      const isContain = a.fit === 'contain';
       return {
         has: true,
+        isCrop: !isContain, isWhole: isContain,
+        fitLabel: isContain ? 'Showing whole image' : 'Filling the frame (cropped)',
+        coverStyle: this._segStyle(!isContain),
+        wholeStyle: this._segStyle(isContain),
+        setCover: () => this.setAdj(key, { fit: 'cover' }),
+        setWhole: () => this.setAdj(key, { fit: 'contain' }),
         x: String(a.x), y: String(a.y), z: String(Math.round(a.z * 100)),
         zLabel: Math.round(a.z * 100) + '%',
         sx: (e) => this.setAdj(key, { x: +e.target.value }),
         sy: (e) => this.setAdj(key, { y: +e.target.value }),
         sz: (e) => this.setAdj(key, { z: (+e.target.value) / 100 }),
-        reset: () => this.setAdj(key, { x: 50, y: 50, z: 1 })
+        reset: () => this.setAdj(key, { x: 50, y: 50, z: 1, fit: 'cover' })
       };
     };
 
